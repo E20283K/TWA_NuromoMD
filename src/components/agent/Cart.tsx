@@ -9,7 +9,7 @@ import { showMainButton, hideMainButton, showBackButton, hideBackButton, haptic,
 export const Cart: React.FC = () => {
   const { items, updateQuantity, removeItem, getTotal, clearCart } = useCartStore();
   const { user } = useAuthStore();
-  const { createOrder } = useOrders('agent', user?.id);
+  const { createOrder, orders } = useOrders('agent', user?.id);
   const navigate = useNavigate();
 
   const [address, setAddress] = useState('');
@@ -18,6 +18,15 @@ export const Cart: React.FC = () => {
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  
+  const recentClients = Array.from(new Set(orders.map(o => JSON.stringify({ 
+    name: o.customer_name, 
+    phone: o.customer_phone, 
+    address: o.delivery_address 
+  }))))
+    .map(s => JSON.parse(s))
+    .filter(c => c.name && c.phone)
+    .slice(0, 5);
 
   useEffect(() => {
     showBackButton(() => navigate(-1));
@@ -87,41 +96,6 @@ export const Cart: React.FC = () => {
       });
     });
   };
-
-  if (showSuccess) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh] p-6 text-center animate-in fade-in zoom-in duration-500">
-        <div className="w-24 h-24 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mb-6 text-5xl">
-          ✅
-        </div>
-        <h2 className="text-2xl font-black mb-2">Order Submitted!</h2>
-        <p className="text-tg-hint mb-8 max-w-xs">Your order has been sent to the manufacturer for approval.</p>
-        <div className="flex flex-col gap-3 w-full">
-          <button 
-            onClick={() => navigate('/history')}
-            className="w-full bg-tg-button text-tg-button-text py-4 rounded-2xl font-bold shadow-lg"
-          >
-            Track Order
-          </button>
-          <button 
-            onClick={() => {
-              setShowSuccess(false);
-              navigate('/catalog');
-            }}
-            className="w-full bg-tg-secondary-bg text-tg-text py-4 rounded-2xl font-bold"
-          >
-            New Order
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const { orders } = useOrders('agent', user?.id);
-  const recentClients = Array.from(new Set(orders.map(o => JSON.stringify({ name: o.customer_name, phone: o.customer_phone, address: o.delivery_address }))))
-    .map(s => JSON.parse(s))
-    .filter(c => c.name && c.phone)
-    .slice(0, 5);
 
   const selectClient = (client: any) => {
     setCustomerName(client.name);
