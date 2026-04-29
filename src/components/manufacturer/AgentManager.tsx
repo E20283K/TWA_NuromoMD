@@ -88,7 +88,7 @@ export const AgentManager: React.FC = () => {
         <h1 className="text-xl font-bold">Sales Agents</h1>
         <button 
           onClick={handleCopyInvite}
-          className="bg-tg-button text-tg-button-text p-2 rounded-full shadow-lg"
+          className="bg-tg-button text-tg-button-text p-2 rounded-full shadow-lg active:scale-90 transition-transform"
         >
           <UserPlus size={24} />
         </button>
@@ -101,7 +101,7 @@ export const AgentManager: React.FC = () => {
         </div>
         <button 
           onClick={handleCopyInvite}
-          className="bg-tg-button text-tg-button-text px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1"
+          className="bg-tg-button text-tg-button-text px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 active:scale-95 transition-transform"
         >
           <LinkIcon size={14} />
           Copy

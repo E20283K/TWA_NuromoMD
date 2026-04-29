@@ -61,7 +61,7 @@ export const ProductManager: React.FC = () => {
         <h1 className="text-xl font-bold">Product Catalog</h1>
         <button 
           onClick={() => setIsAdding(true)}
-          className="bg-tg-button text-tg-button-text p-2 rounded-full shadow-lg"
+          className="bg-tg-button text-tg-button-text p-2 rounded-full shadow-lg active:scale-90 transition-transform"
         >
           <Plus size={24} />
         </button>
@@ -164,7 +164,7 @@ export const ProductManager: React.FC = () => {
               <button 
                 onClick={handleSaveProduct}
                 disabled={isSubmitting}
-                className="w-full bg-tg-button text-tg-button-text py-4 rounded-xl font-bold mt-4 shadow-lg shadow-tg-button/20 disabled:opacity-50"
+                className="w-full bg-tg-button text-tg-button-text py-4 rounded-xl font-bold mt-4 shadow-lg shadow-tg-button/20 disabled:opacity-50 active:scale-[0.98] transition-transform"
               >
                 {isSubmitting ? 'Creating...' : 'Create Product'}
               </button>

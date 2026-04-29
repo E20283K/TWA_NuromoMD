@@ -18,13 +18,19 @@ export const initTWA = () => {
 
 export const haptic = {
   impact: (style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft' = 'light') => {
-    tg.HapticFeedback.impactOccurred(style);
+    if (tg.HapticFeedback && typeof tg.HapticFeedback.impactOccurred === 'function') {
+      tg.HapticFeedback.impactOccurred(style);
+    }
   },
   notification: (type: 'error' | 'success' | 'warning') => {
-    tg.HapticFeedback.notificationOccurred(type);
+    if (tg.HapticFeedback && typeof tg.HapticFeedback.notificationOccurred === 'function') {
+      tg.HapticFeedback.notificationOccurred(type);
+    }
   },
   selection: () => {
-    tg.HapticFeedback.selectionChanged();
+    if (tg.HapticFeedback && typeof tg.HapticFeedback.selectionChanged === 'function') {
+      tg.HapticFeedback.selectionChanged();
+    }
   }
 };
 

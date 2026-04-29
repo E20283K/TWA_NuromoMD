@@ -53,7 +53,7 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-tg-bg text-tg-text pb-20">
+    <div className="min-h-screen bg-tg-bg text-tg-text pb-20 safe-top">
       <Routes>
         {user.role === 'agent' ? (
           <>

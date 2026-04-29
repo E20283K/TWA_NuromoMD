@@ -22,11 +22,15 @@
 
 body {
   margin: 0;
-  padding-top: calc(var(--safe-area-top) + 16px);
   min-width: 320px;
   min-height: 100vh;
   background-color: var(--tg-theme-bg-color, #ffffff);
   color: var(--tg-theme-text-color, #000000);
+  overflow-x: hidden;
+}
+
+.safe-top {
+  padding-top: calc(var(--safe-area-top) + 24px);
 }
 
 /* Telegram Native Feel */
