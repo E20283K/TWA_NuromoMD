@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useOrders } from '../../hooks/useOrders';
 import { StatusBadge } from '../shared/StatusBadge';
-import { ArrowLeft } from 'lucide-react';
+import { PageHeader } from '../shared/PageHeader';
 
 export const OrderHistory: React.FC = () => {
   const { user } = useAuthStore();
@@ -17,18 +17,10 @@ export const OrderHistory: React.FC = () => {
   }
 
   return (
-    <div className="p-4 space-y-4 pb-24">
-      <header className="flex items-center gap-3">
-        <button 
-          onClick={() => navigate('/')}
-          className="p-2 bg-tg-secondary-bg rounded-full text-tg-hint active:scale-90 transition-transform"
-        >
-          <ArrowLeft size={20} />
-        </button>
-        <h1 className="text-xl font-bold">My Orders</h1>
-      </header>
+    <div className="min-h-screen bg-tg-bg pb-24">
+      <PageHeader title="My Orders" showBack={false} />
       
-      <div className="space-y-3">
+      <div className="p-4 space-y-3">
         {orders.map((order) => (
           <div 
             key={order.id}

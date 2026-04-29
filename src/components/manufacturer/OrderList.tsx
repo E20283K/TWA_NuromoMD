@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useOrders } from '../../hooks/useOrders';
 import { StatusBadge } from '../shared/StatusBadge';
+import { PageHeader } from '../shared/PageHeader';
 import type { OrderStatus } from '../../types';
 import { Search } from 'lucide-react';
 
@@ -14,16 +15,17 @@ export const OrderList: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
 
   const filteredOrders = orders.filter((o) => {
-    const matchesSearch = o.order_number.toLowerCase().includes(search.toLowerCase()) || 
+    const matchesSearch = o.order_number.toLowerCase().includes(search.toLowerCase()) ||
                           o.agent?.full_name.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === 'all' || o.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   return (
-    <div className="p-4 space-y-4 pb-24">
-      <h1 className="text-xl font-bold">Order Management</h1>
+    <div className="min-h-screen bg-tg-bg pb-24">
+      <PageHeader title="Orders" showBack={false} />
 
+      <div className="p-4 space-y-4">
       <div className="flex gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-tg-hint" size={16} />
@@ -74,6 +76,7 @@ export const OrderList: React.FC = () => {
              </div>
           </div>
         ))}
+      </div>
       </div>
     </div>
   );

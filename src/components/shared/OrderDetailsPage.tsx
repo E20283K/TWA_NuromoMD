@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useOrders } from '../../hooks/useOrders';
 import { StatusBadge } from '../shared/StatusBadge';
-import { ArrowLeft, MapPin, User, FileText, Check, XCircle, Truck } from 'lucide-react';
+import { PageHeader } from './PageHeader';
+import { MapPin, User, FileText, Check, XCircle, Truck } from 'lucide-react';
 import { haptic, tg } from '../../lib/telegram';
 
 export const OrderDetailsPage: React.FC = () => {
@@ -64,18 +65,10 @@ export const OrderDetailsPage: React.FC = () => {
 
   return (
     <div className="pb-32 bg-tg-bg min-h-screen">
-      <header className="sticky top-0 z-50 bg-tg-bg/80 backdrop-blur-md border-b border-tg-hint/10 px-4 py-3 flex items-center gap-3">
-        <button 
-          onClick={() => navigate(-1)}
-          className="p-2 bg-tg-secondary-bg rounded-full text-tg-hint active:scale-90 transition-transform"
-        >
-          <ArrowLeft size={20} />
-        </button>
-        <div>
-          <h1 className="font-bold text-lg leading-tight">Order #{order.order_number}</h1>
-          <p className="text-tg-hint text-[10px]">{new Date(order.created_at).toLocaleString()}</p>
-        </div>
-      </header>
+      <PageHeader
+        title={`Order #${order.order_number}`}
+        subtitle={new Date(order.created_at).toLocaleString()}
+      />
 
       <div className="p-4 space-y-6">
         <div className="flex items-center justify-between bg-tg-secondary-bg p-4 rounded-2xl border border-tg-hint/5">
