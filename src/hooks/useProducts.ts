@@ -23,9 +23,8 @@ export const useProducts = (manufacturerId?: string) => {
 
   const addProductMutation = useMutation({
     mutationFn: async (newProduct: Partial<Product>) => {
-      const { data, error } = await supabase
-        .from('products')
-        .insert(newProduct as any)
+      const { data, error } = await (supabase.from('products') as any)
+        .insert(newProduct)
         .select()
         .single();
       if (error) throw error;
@@ -38,9 +37,8 @@ export const useProducts = (manufacturerId?: string) => {
 
   const updateProductMutation = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Product> & { id: string }) => {
-      const { data, error } = await supabase
-        .from('products')
-        .update(updates as any)
+      const { data, error } = await (supabase.from('products') as any)
+        .update(updates)
         .eq('id', id)
         .select()
         .single();

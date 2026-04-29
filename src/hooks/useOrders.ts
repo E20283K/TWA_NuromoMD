@@ -59,9 +59,8 @@ export const useOrders = (role: 'manufacturer' | 'agent', userId?: string) => {
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ orderId, status, rejectedReason }: { orderId: string, status: OrderStatus, rejectedReason?: string }) => {
-      const { data, error } = await supabase
-        .from('orders')
-        .update({ status, rejected_reason: rejectedReason, updated_at: new Date().toISOString() } as any)
+      const { data, error } = await (supabase.from('orders') as any)
+        .update({ status, rejected_reason: rejectedReason, updated_at: new Date().toISOString() })
         .eq('id', orderId)
         .select()
         .single();
@@ -75,10 +74,8 @@ export const useOrders = (role: 'manufacturer' | 'agent', userId?: string) => {
 
   const createOrderMutation = useMutation({
     mutationFn: async ({ order, items }: { order: Partial<Order>, items: Partial<OrderItem>[] }) => {
-      // 1. Create order
-      const { data: newOrder, error: orderError } = await supabase
-        .from('orders')
-        .insert(order as any)
+      const { data: newOrder, error: orderError } = await (supabase.from('orders') as any)
+        .insert(order)
         .select()
         .single();
 
@@ -87,12 +84,11 @@ export const useOrders = (role: 'manufacturer' | 'agent', userId?: string) => {
       // 2. Create order items
       const itemsWithOrderId = items.map(item => ({
         ...item,
-        order_id: newOrder.id
+        order_id: (newOrder as any).id
       }));
 
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(itemsWithOrderId as any);
+      const { error: itemsError } = await (supabase.from('order_items') as any)
+        .insert(itemsWithOrderId);
 
       if (itemsError) throw itemsError;
 

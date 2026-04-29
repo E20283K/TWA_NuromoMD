@@ -3,7 +3,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useOrders } from '../../hooks/useOrders';
 import { StatusBadge } from '../shared/StatusBadge';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
+// Removed unused imports
 
 export const AgentHome: React.FC = () => {
   const { user } = useAuthStore();

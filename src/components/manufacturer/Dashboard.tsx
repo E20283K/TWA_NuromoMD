@@ -12,7 +12,7 @@ export const Dashboard: React.FC = () => {
   const { products } = useProducts(user?.id);
   const navigate = useNavigate();
 
-  const today = new Date().toISOString().split('T')[0];
+  // Removed unused today variable
   // const todayOrders = orders.filter(o => o.created_at.startsWith(today));
   const pendingOrders = orders.filter(o => o.status === 'pending');
   const totalRevenue = orders.reduce((sum, o) => sum + Number(o.total_amount), 0);

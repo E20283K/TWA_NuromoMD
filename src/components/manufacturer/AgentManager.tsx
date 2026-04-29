@@ -28,9 +28,8 @@ export const AgentManager: React.FC = () => {
 
   const toggleAgentStatus = useMutation({
     mutationFn: async ({ agentId, isActive }: { agentId: string, isActive: boolean }) => {
-      const { error } = await supabase
-        .from('users')
-        .update({ is_active: isActive } as any)
+      const { error } = await (supabase.from('users') as any)
+        .update({ is_active: isActive })
         .eq('id', agentId);
       if (error) throw error;
     },
