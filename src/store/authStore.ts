@@ -25,12 +25,13 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       set({ isLoading: true, error: null });
       
-      const initData = tg.initData;
+      const initData = tg.initData || (window as any).Telegram?.WebApp?.initData;
       if (!initData) {
         throw new Error('Telegram initData not found. Please open this app in Telegram.');
       }
 
-      const telegramId = tg.initDataUnsafe.user?.id;
+      const initDataUnsafe = tg.initDataUnsafe || (window as any).Telegram?.WebApp?.initDataUnsafe;
+      const telegramId = initDataUnsafe?.user?.id;
       if (!telegramId) throw new Error('Could not get Telegram ID');
 
       const { data: userData, error: userError } = await supabase
@@ -54,8 +55,8 @@ export const useAuthStore = create<AuthState>((set) => ({
           .from('users')
           .insert({
             telegram_id: telegramId,
-            telegram_username: tg.initDataUnsafe.user?.username || null,
-            full_name: `${tg.initDataUnsafe.user?.first_name || ''} ${tg.initDataUnsafe.user?.last_name || ''}`.trim(),
+            telegram_username: initDataUnsafe?.user?.username || null,
+            full_name: `${initDataUnsafe?.user?.first_name || ''} ${initDataUnsafe?.user?.last_name || ''}`.trim(),
             role,
           } as any)
           .select()
