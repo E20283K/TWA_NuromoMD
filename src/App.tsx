@@ -1,0 +1,82 @@
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useAuthStore } from './store/authStore';
+import { initTWA } from './lib/telegram';
+
+// Components - Agent
+import { AgentHome } from './components/agent/AgentHome';
+import { ProductCatalog } from './components/agent/ProductCatalog';
+import { OrderHistory as AgentOrderHistory } from './components/agent/OrderHistory';
+import { Cart } from './components/agent/Cart';
+
+// Components - Manufacturer
+import { Dashboard as ManufacturerDashboard } from './components/manufacturer/Dashboard';
+import { OrderList as ManufacturerOrderList } from './components/manufacturer/OrderList';
+import { ProductManager } from './components/manufacturer/ProductManager';
+import { AgentManager } from './components/manufacturer/AgentManager';
+
+// Shared
+import { BottomNav } from './components/shared/BottomNav';
+import { LoadingScreen } from './components/shared/LoadingScreen';
+
+const queryClient = new QueryClient();
+
+const AppContent: React.FC = () => {
+  const { user, isLoading, login } = useAuthStore();
+
+  useEffect(() => {
+    initTWA();
+    login();
+  }, [login]);
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center">
+        <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
+        <p className="text-tg-hint mb-6">Please open this app through the official Telegram bot.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-tg-bg text-tg-text pb-20">
+      <Routes>
+        {user.role === 'agent' ? (
+          <>
+            <Route path="/" element={<AgentHome />} />
+            <Route path="/catalog" element={<ProductCatalog />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/history" element={<AgentOrderHistory />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </>
+        ) : (
+          <>
+            <Route path="/" element={<ManufacturerDashboard />} />
+            <Route path="/orders" element={<ManufacturerOrderList />} />
+            <Route path="/products" element={<ProductManager />} />
+            <Route path="/agents" element={<AgentManager />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </>
+        )}
+      </Routes>
+      <BottomNav role={user.role} />
+    </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </QueryClientProvider>
+  );
+};
+
+export default App;

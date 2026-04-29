@@ -1,0 +1,57 @@
+.app-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px;
+  padding-bottom: 80px; /* Space for the Telegram main button */
+}
+
+.app-header {
+  margin-bottom: 24px;
+}
+
+.app-header h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--tg-theme-text-color, #000000);
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--tg-theme-hint-color, #999999);
+  margin-top: 4px;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 600px) {
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+}
+
+.loader {
+  border: 3px solid var(--tg-theme-secondary-bg-color, #f3f3f3);
+  border-top: 3px solid var(--tg-theme-button-color, #3498db);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

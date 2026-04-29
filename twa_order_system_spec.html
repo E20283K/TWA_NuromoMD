@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TWA Order Management System — Full Specification</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@300;400;600;700;800&display=swap');
+
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2236;
+    --border: #1f2d4a;
+    --accent: #3b82f6;
+    --accent2: #6366f1;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Sora', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,14,26,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; gap: 2rem;
+    height: 56px;
+  }
+  .nav-logo { font-weight: 800; font-size: 1rem; color: var(--accent); letter-spacing: -0.5px; }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #0a0e1a 0%, #0f1c3f 50%, #0a0e1a 100%);
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(59,130,246,0.12) 0%, transparent 70%);
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.3);
+    color: #93c5fd; border-radius: 999px; padding: 0.3rem 1rem;
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800; line-height: 1.1;
+    background: linear-gradient(135deg, #e2e8f0 0%, #93c5fd 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+  }
+  .hero p { color: var(--muted); max-width: 620px; margin: 0 auto; font-size: 1rem; }
+  .hero-meta {
+    display: flex; justify-content: center; gap: 2rem; margin-top: 2.5rem;
+    flex-wrap: wrap;
+  }
+  .meta-chip {
+    display: flex; align-items: center; gap: 0.5rem;
+    color: var(--muted); font-size: 0.8rem;
+  }
+  .meta-chip span { color: var(--text); font-weight: 600; }
+
+  /* LAYOUT */
+  .container { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem; }
+  .section { margin-bottom: 4rem; }
+  .section-label {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+  h2 {
+    font-size: 1.6rem; font-weight: 700; color: var(--text);
+    margin-bottom: 1.5rem; line-height: 1.2;
+  }
+  h3 { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; }
+  p { color: #94a3b8; margin-bottom: 1rem; }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+
+  /* ROLE CARDS */
+  .role-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.75rem;
+    position: relative; overflow: hidden;
+  }
+  .role-card.manufacturer { border-top: 3px solid var(--accent); }
+  .role-card.agent { border-top: 3px solid var(--green); }
+  .role-badge {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    border-radius: 6px; padding: 0.3rem 0.75rem;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px;
+    text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .role-badge.blue { background: rgba(59,130,246,0.15); color: #93c5fd; }
+  .role-badge.green { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+  .feature-list { list-style: none; }
+  .feature-list li {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    padding: 0.4rem 0; color: #94a3b8; font-size: 0.88rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .feature-list li:last-child { border-bottom: none; }
+  .feature-list li::before {
+    content: '→'; color: var(--accent); font-weight: 700;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .role-card.agent .feature-list li::before { color: var(--green); }
+
+  /* SCREEN MOCKUPS */
+  .screens-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
+  .screen-mockup {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .screen-header {
+    padding: 0.6rem 1rem;
+    display: flex; align-items: center; gap: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .screen-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .screen-title { font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .screen-body { padding: 1rem; }
+
+  /* PHONE FRAME */
+  .phone-frame {
+    width: 200px; margin: 0 auto;
+    background: #111827;
+    border: 2px solid #1f2d4a;
+    border-radius: 28px;
+    padding: 1rem 0.75rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .phone-notch {
+    width: 60px; height: 6px;
+    background: #1f2d4a; border-radius: 3px;
+    margin: 0 auto 0.75rem;
+  }
+  .phone-screen { background: #0a0e1a; border-radius: 16px; overflow: hidden; min-height: 300px; }
+  .tg-header {
+    background: var(--surface);
+    padding: 0.6rem 0.75rem;
+    display: flex; align-items: center; gap: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .tg-back { color: var(--accent); font-size: 0.7rem; }
+  .tg-title { font-size: 0.75rem; font-weight: 700; }
+  .tg-body { padding: 0.75rem; }
+  .tg-section-label {
+    font-size: 0.6rem; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 0.4rem; font-weight: 700;
+  }
+  .tg-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem 0.6rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.65rem;
+  }
+  .tg-card-row { display: flex; justify-content: space-between; align-items: center; }
+  .tg-tag {
+    display: inline-block; border-radius: 4px; padding: 0.1rem 0.4rem;
+    font-size: 0.55rem; font-weight: 700;
+  }
+  .tag-green { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+  .tag-amber { background: rgba(245,158,11,0.2); color: #fcd34d; }
+  .tag-blue { background: rgba(59,130,246,0.2); color: #93c5fd; }
+  .tag-red { background: rgba(239,68,68,0.2); color: #fca5a5; }
+  .tg-product-row {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.3rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.62rem;
+  }
+  .tg-product-icon {
+    width: 20px; height: 20px; border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; flex-shrink: 0;
+  }
+  .tg-btn {
+    background: var(--accent); color: white;
+    border: none; border-radius: 8px;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.65rem; font-weight: 700;
+    width: 100%; margin-top: 0.6rem; text-align: center;
+    cursor: pointer;
+  }
+  .tg-btn.green { background: var(--green); }
+  .tg-qty { display: flex; align-items: center; gap: 0.3rem; }
+  .tg-qty-btn {
+    width: 14px; height: 14px; border-radius: 3px;
+    background: var(--border); display: flex; align-items: center;
+    justify-content: center; font-size: 0.6rem; font-weight: 700;
+    color: var(--text);
+  }
+  .tg-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.5rem;
+    font-size: 0.62rem; margin-bottom: 0.35rem;
+  }
+  .tg-stat-val { font-size: 1rem; font-weight: 800; color: var(--accent); }
+
+  /* DB SCHEMA */
+  .table-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+  }
+  .table-header {
+    background: var(--surface2);
+    padding: 0.75rem 1.25rem;
+    display: flex; align-items: center; gap: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .table-icon { font-size: 1rem; }
+  .table-name { font-family: var(--mono); font-size: 0.9rem; font-weight: 700; color: var(--accent); }
+  .table-desc { color: var(--muted); font-size: 0.78rem; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    text-align: left; padding: 0.6rem 1.25rem;
+    font-family: var(--mono); font-size: 0.68rem;
+    color: var(--muted); letter-spacing: 1px; text-transform: uppercase;
+    background: rgba(0,0,0,0.2);
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 0.55rem 1.25rem;
+    font-size: 0.82rem; color: #94a3b8;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  .col-name { font-family: var(--mono); color: var(--text); font-weight: 600; font-size: 0.8rem; }
+  .col-type { font-family: var(--mono); color: #f59e0b; font-size: 0.75rem; }
+  .col-pk { background: rgba(59,130,246,0.15); color: #93c5fd; border-radius: 4px; padding: 0.1rem 0.4rem; font-size: 0.65rem; font-weight: 700; }
+  .col-fk { background: rgba(99,102,241,0.15); color: #a5b4fc; border-radius: 4px; padding: 0.1rem 0.4rem; font-size: 0.65rem; font-weight: 700; }
+  .col-tag { border-radius: 4px; padding: 0.1rem 0.4rem; font-size: 0.65rem; font-weight: 700; margin-right: 0.25rem; }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: #070b14;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    line-height: 1.8;
+    overflow-x: auto;
+    position: relative;
+  }
+  .code-label {
+    position: absolute; top: 0.75rem; right: 1rem;
+    font-size: 0.65rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .kw { color: #f472b6; }
+  .fn { color: #60a5fa; }
+  .str { color: #34d399; }
+  .cm { color: #4b5563; }
+  .tp { color: #fbbf24; }
+
+  /* PROMPT BOX */
+  .prompt-box {
+    background: #070b14;
+    border: 1px solid #1f2d4a;
+    border-left: 4px solid var(--accent);
+    border-radius: 0 12px 12px 0;
+    padding: 1.5rem 2rem;
+    font-size: 0.88rem;
+    line-height: 1.9;
+    color: #cbd5e1;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* FLOW */
+  .flow-steps { display: flex; flex-direction: column; gap: 0; position: relative; }
+  .flow-steps::before {
+    content: '';
+    position: absolute; left: 20px; top: 20px; bottom: 20px;
+    width: 2px; background: linear-gradient(180deg, var(--accent), var(--green));
+  }
+  .flow-step {
+    display: flex; gap: 1.25rem; align-items: flex-start;
+    padding: 1rem 0 1rem 0;
+  }
+  .flow-num {
+    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.8rem;
+    background: var(--surface);
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    z-index: 1;
+  }
+  .flow-step:nth-child(even) .flow-num { border-color: var(--green); color: var(--green); }
+  .flow-content h4 { color: var(--text); font-size: 0.95rem; margin-bottom: 0.25rem; }
+  .flow-content p { font-size: 0.82rem; color: var(--muted); margin: 0; }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+
+  /* TECH STACK */
+  .stack-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; }
+  .stack-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1rem 1.25rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .stack-icon { font-size: 1.5rem; }
+  .stack-info h4 { font-size: 0.85rem; font-weight: 700; color: var(--text); }
+  .stack-info p { font-size: 0.72rem; color: var(--muted); margin: 0; }
+
+  /* COPY BTN */
+  .copy-btn {
+    position: absolute; top: 0.75rem; right: 5rem;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--muted); border-radius: 6px;
+    padding: 0.25rem 0.75rem; font-size: 0.7rem; cursor: pointer;
+    font-family: var(--sans); transition: all 0.2s;
+  }
+  .copy-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+
+  @media (max-width: 700px) {
+    .screens-grid { grid-template-columns: 1fr; }
+    nav { display: none; }
+    .hero { padding: 3rem 1.25rem; }
+    .container { padding: 2rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">🛒 OrderFlow TWA</div>
+  <ul class="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#roles">Roles</a></li>
+    <li><a href="#screens">Screens</a></li>
+    <li><a href="#flow">Flow</a></li>
+    <li><a href="#database">Database</a></li>
+    <li><a href="#prompt">AI Prompt</a></li>
+  </ul>
+</nav>
+
+<div class="hero" id="overview">
+  <div class="hero-badge">📱 Telegram Mini App Specification</div>
+  <h1>OrderFlow TWA<br>System Design</h1>
+  <p>A complete specification for a manufacturer–agent order management Telegram Web App with Supabase backend, ready for AI-assisted development.</p>
+  <div class="hero-meta">
+    <div class="meta-chip">Platform: <span>Telegram TWA (WebApp)</span></div>
+    <div class="meta-chip">Backend: <span>Supabase (PostgreSQL)</span></div>
+    <div class="meta-chip">Roles: <span>Manufacturer + Agent(s)</span></div>
+    <div class="meta-chip">Notifications: <span>Telegram Bot API</span></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TECH STACK -->
+  <div class="section">
+    <div class="section-label">Technology Stack</div>
+    <h2>Core Technologies</h2>
+    <div class="stack-grid">
+      <div class="stack-item"><div class="stack-icon">📱</div><div class="stack-info"><h4>Telegram Web App</h4><p>TWA SDK, MainButton, BackButton, HapticFeedback</p></div></div>
+      <div class="stack-item"><div class="stack-icon">⚛️</div><div class="stack-info"><h4>React + TypeScript</h4><p>Vite, React Query, Zustand state</p></div></div>
+      <div class="stack-item"><div class="stack-icon">🗄️</div><div class="stack-info"><h4>Supabase</h4><p>PostgreSQL, Row Level Security, Realtime</p></div></div>
+      <div class="stack-item"><div class="stack-icon">🤖</div><div class="stack-info"><h4>Telegram Bot API</h4><p>Push notifications, inline keyboards</p></div></div>
+      <div class="stack-item"><div class="stack-icon">🔒</div><div class="stack-info"><h4>TWA Auth</h4><p>initData HMAC validation, no passwords</p></div></div>
+      <div class="stack-item"><div class="stack-icon">🚀</div><div class="stack-info"><h4>Vercel / Cloudflare</h4><p>Deploy frontend, Edge Functions for bot</p></div></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ROLES -->
+  <div class="section" id="roles">
+    <div class="section-label">System Roles</div>
+    <h2>Two Interfaces, One System</h2>
+    <div class="card-grid">
+      <div class="role-card manufacturer">
+        <div class="role-badge blue">🏭 Manufacturer / Seller</div>
+        <h3>Dashboard Interface</h3>
+        <p style="font-size:0.82rem; margin-bottom:1rem;">Full control over the product catalog and real-time visibility into all incoming agent orders.</p>
+        <ul class="feature-list">
+          <li>Manage product catalog (add, edit, archive products)</li>
+          <li>Set prices, units, minimum order quantities</li>
+          <li>View all orders from all agents in real-time</li>
+          <li>Filter orders by agent, product, date, status</li>
+          <li>Update order status (Confirmed, Shipped, Rejected)</li>
+          <li>Manage agent accounts (invite, suspend)</li>
+          <li>View analytics: revenue, top agents, top products</li>
+          <li>Export orders to CSV / PDF</li>
+          <li>Receive Telegram notification on new order</li>
+        </ul>
+      </div>
+      <div class="role-card agent">
+        <div class="role-badge green">👤 Sales Agent</div>
+        <h3>Mobile-first Order Interface</h3>
+        <p style="font-size:0.82rem; margin-bottom:1rem;">Streamlined interface optimized for on-the-go use — browse products, create orders at customer addresses.</p>
+        <ul class="feature-list">
+          <li>Browse product catalog with photos and prices</li>
+          <li>Search and filter products by category</li>
+          <li>Add customer address / GPS location to order</li>
+          <li>Build cart and submit order with one tap</li>
+          <li>Add notes per product or per order</li>
+          <li>View own order history and statuses</li>
+          <li>Receive Telegram notifications on status changes</li>
+          <li>View daily / weekly personal sales stats</li>
+          <li>Multiple agents can work simultaneously</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SCREEN MOCKUPS -->
+  <div class="section" id="screens">
+    <div class="section-label">UI/UX Mockups</div>
+    <h2>Screen Designs (TWA Style)</h2>
+    <p>All screens follow Telegram's native design language — using the user's Telegram theme colors, native bottom sheets, and MainButton.</p>
+
+    <!-- AGENT SCREENS -->
+    <h3 style="margin-top:1.5rem; color: #6ee7b7;">Agent Screens</h3>
+    <div class="screens-grid" style="margin-top:1rem;">
+
+      <!-- Agent Home -->
+      <div>
+        <div class="screen-mockup">
+          <div class="screen-header">
+            <div class="screen-dot" style="background:#ef4444"></div>
+            <div class="screen-dot" style="background:#f59e0b"></div>
+            <div class="screen-dot" style="background:#10b981"></div>
+            <div class="screen-title">Agent — Home</div>
+          </div>
+          <div class="screen-body">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div class="tg-header"><span class="tg-title">📦 OrderFlow</span></div>
+                <div class="tg-body">
+                  <div class="tg-section-label">Today's Stats</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.35rem;margin-bottom:0.75rem;">
+                    <div class="tg-stat"><div style="color:var(--muted);font-size:0.55rem;">Orders Today</div><div class="tg-stat-val" style="font-size:0.9rem;">7</div></div>
+                    <div class="tg-stat"><div style="color:var(--muted);font-size:0.55rem;">Total Value</div><div class="tg-stat-val" style="color:var(--green);font-size:0.9rem;">$842</div></div>
+                  </div>
+                  <div class="tg-section-label">Quick Actions</div>
+                  <div class="tg-card" style="background:var(--accent);border-color:var(--accent);color:white;text-align:center;font-weight:700;font-size:0.7rem;margin-bottom:0.35rem;">
+                    ➕ New Order
+                  </div>
+                  <div class="tg-card" style="text-align:center;font-size:0.7rem;">📋 My Orders</div>
+                  <div class="tg-section-label" style="margin-top:0.6rem;">Recent Orders</div>
+                  <div class="tg-card">
+                    <div class="tg-card-row"><span style="font-weight:700;">#ORD-041</span><span class="tg-tag tag-amber">Pending</span></div>
+                    <div style="color:var(--muted);font-size:0.58rem;margin-top:0.2rem;">3 items · $120 · Amir Timur st.</div>
+                  </div>
+                  <div class="tg-card">
+                    <div class="tg-card-row"><span style="font-weight:700;">#ORD-040</span><span class="tg-tag tag-green">Confirmed</span></div>
+                    <div style="color:var(--muted);font-size:0.58rem;margin-top:0.2rem;">5 items · $280 · Yunusobod</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="text-align:center;font-size:0.75rem;color:var(--muted);margin-top:0.5rem;">Agent Home Dashboard</p>
+      </div>
+
+      <!-- Product Catalog -->
+      <div>
+        <div class="screen-mockup">
+          <div class="screen-header">
+            <div class="screen-dot" style="background:#ef4444"></div>
+            <div class="screen-dot" style="background:#f59e0b"></div>
+            <div class="screen-dot" style="background:#10b981"></div>
+            <div class="screen-title">Agent — Catalog</div>
+          </div>
+          <div class="screen-body">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div class="tg-header"><span class="tg-back">‹</span><span class="tg-title">Products</span></div>
+                <div class="tg-body">
+                  <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.4rem 0.6rem;font-size:0.62rem;color:var(--muted);margin-bottom:0.6rem;">🔍 Search products...</div>
+                  <div style="display:flex;gap:0.3rem;margin-bottom:0.6rem;overflow:hidden;">
+                    <span style="background:var(--accent);color:white;border-radius:99px;padding:0.15rem 0.5rem;font-size:0.58rem;font-weight:700;flex-shrink:0;">All</span>
+                    <span style="background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:0.15rem 0.5rem;font-size:0.58rem;flex-shrink:0;color:var(--muted);">Drinks</span>
+                    <span style="background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:0.15rem 0.5rem;font-size:0.58rem;flex-shrink:0;color:var(--muted);">Food</span>
+                  </div>
+                  <div class="tg-product-row"><div class="tg-product-icon" style="background:rgba(59,130,246,0.2);">💊</div><div style="flex:1"><div style="font-weight:700;font-size:0.65rem;">Paracetamol 500mg</div><div style="color:var(--muted);font-size:0.58rem;">Box of 24</div></div><div class="tg-qty"><div class="tg-qty-btn">−</div><span style="font-size:0.65rem;font-weight:700;">2</span><div class="tg-qty-btn" style="background:var(--accent);color:white;">+</div></div></div>
+                  <div class="tg-product-row"><div class="tg-product-icon" style="background:rgba(16,185,129,0.2);">🥤</div><div style="flex:1"><div style="font-weight:700;font-size:0.65rem;">Coca Cola 1L</div><div style="color:var(--muted);font-size:0.58rem;">Case of 12</div></div><div class="tg-qty"><div class="tg-qty-btn">−</div><span style="font-size:0.65rem;font-weight:700;">0</span><div class="tg-qty-btn" style="background:var(--accent);color:white;">+</div></div></div>
+                  <div class="tg-product-row"><div class="tg-product-icon" style="background:rgba(245,158,11,0.2);">🍞</div><div style="flex:1"><div style="font-weight:700;font-size:0.65rem;">Whole Grain Bread</div><div style="color:var(--muted);font-size:0.58rem;">Per loaf</div></div><div class="tg-qty"><div class="tg-qty-btn">−</div><span style="font-size:0.65rem;font-weight:700;">0</span><div class="tg-qty-btn" style="background:var(--accent);color:white;">+</div></div></div>
+                  <div class="tg-product-row"><div class="tg-product-icon" style="background:rgba(239,68,68,0.2);">🧴</div><div style="flex:1"><div style="font-weight:700;font-size:0.65rem;">Hand Sanitizer</div><div style="color:var(--muted);font-size:0.58rem;">500ml bottle</div></div><div class="tg-qty"><div class="tg-qty-btn">−</div><span style="font-size:0.65rem;font-weight:700;">0</span><div class="tg-qty-btn" style="background:var(--accent);color:white;">+</div></div></div>
+                  <div class="tg-btn">View Cart (2 items) →</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="text-align:center;font-size:0.75rem;color:var(--muted);margin-top:0.5rem;">Product Catalog + Cart</p>
+      </div>
+
+      <!-- Order Checkout -->
+      <div>
+        <div class="screen-mockup">
+          <div class="screen-header">
+            <div class="screen-dot" style="background:#ef4444"></div>
+            <div class="screen-dot" style="background:#f59e0b"></div>
+            <div class="screen-dot" style="background:#10b981"></div>
+            <div class="screen-title">Agent — Checkout</div>
+          </div>
+          <div class="screen-body">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div class="tg-header"><span class="tg-back">‹</span><span class="tg-title">New Order</span></div>
+                <div class="tg-body">
+                  <div class="tg-section-label">Customer Address</div>
+                  <div class="tg-card" style="margin-bottom:0.5rem;">
+                    <div style="font-size:0.62rem;color:var(--muted);">📍 Address line</div>
+                    <div style="font-size:0.68rem;font-weight:700;margin-top:0.2rem;">45 Navoi Street, Tashkent</div>
+                  </div>
+                  <div class="tg-card" style="margin-bottom:0.5rem;font-size:0.62rem;color:var(--muted);">📌 Share current GPS location</div>
+                  <div class="tg-section-label">Order Items</div>
+                  <div class="tg-card">
+                    <div class="tg-card-row"><span>💊 Paracetamol ×2</span><span style="color:var(--accent);font-weight:700;">$18.00</span></div>
+                  </div>
+                  <div class="tg-card">
+                    <div class="tg-card-row"><span>🥤 Coca Cola ×3</span><span style="color:var(--accent);font-weight:700;">$24.00</span></div>
+                  </div>
+                  <div class="tg-section-label" style="margin-top:0.5rem;">Notes</div>
+                  <div class="tg-card" style="color:var(--muted);font-size:0.62rem;">Add delivery notes...</div>
+                  <div style="display:flex;justify-content:space-between;margin-top:0.5rem;margin-bottom:0.4rem;">
+                    <span style="font-size:0.65rem;color:var(--muted);">Total</span>
+                    <span style="font-size:0.75rem;font-weight:800;color:var(--green);">$42.00</span>
+                  </div>
+                  <div class="tg-btn green">✅ Submit Order</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="text-align:center;font-size:0.75rem;color:var(--muted);margin-top:0.5rem;">Order Checkout Screen</p>
+      </div>
+    </div>
+
+    <!-- MANUFACTURER SCREENS -->
+    <h3 style="margin-top:2rem; color: #93c5fd;">Manufacturer Screens</h3>
+    <div class="screens-grid" style="margin-top:1rem;">
+
+      <!-- Manufacturer Dashboard -->
+      <div>
+        <div class="screen-mockup">
+          <div class="screen-header">
+            <div class="screen-dot" style="background:#ef4444"></div>
+            <div class="screen-dot" style="background:#f59e0b"></div>
+            <div class="screen-dot" style="background:#10b981"></div>
+            <div class="screen-title">Manufacturer — Dashboard</div>
+          </div>
+          <div class="screen-body">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div class="tg-header"><span class="tg-title">🏭 Control Panel</span></div>
+                <div class="tg-body">
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.3rem;margin-bottom:0.6rem;">
+                    <div class="tg-stat"><div style="color:var(--muted);font-size:0.55rem;">New Orders</div><div class="tg-stat-val" style="color:var(--amber);">12</div></div>
+                    <div class="tg-stat"><div style="color:var(--muted);font-size:0.55rem;">Revenue Today</div><div class="tg-stat-val" style="color:var(--green);">$3.2K</div></div>
+                    <div class="tg-stat"><div style="color:var(--muted);font-size:0.55rem;">Active Agents</div><div class="tg-stat-val">5</div></div>
+                    <div class="tg-stat"><div style="color:var(--muted);font-size:0.55rem;">Products</div><div class="tg-stat-val">48</div></div>
+                  </div>
+                  <div class="tg-section-label">Incoming Orders</div>
+                  <div class="tg-card">
+                    <div class="tg-card-row"><span style="font-weight:700;font-size:0.65rem;">#ORD-041</span><span class="tg-tag tag-amber">New</span></div>
+                    <div style="color:var(--muted);font-size:0.58rem;">Agent: Bobur · 3 items · $120</div>
+                    <div style="display:flex;gap:0.3rem;margin-top:0.3rem;">
+                      <span style="background:var(--green);color:white;border-radius:4px;padding:0.15rem 0.4rem;font-size:0.55rem;font-weight:700;">✓ Confirm</span>
+                      <span style="background:var(--red);color:white;border-radius:4px;padding:0.15rem 0.4rem;font-size:0.55rem;font-weight:700;">✗ Reject</span>
+                    </div>
+                  </div>
+                  <div class="tg-card">
+                    <div class="tg-card-row"><span style="font-weight:700;font-size:0.65rem;">#ORD-040</span><span class="tg-tag tag-blue">Confirmed</span></div>
+                    <div style="color:var(--muted);font-size:0.58rem;">Agent: Jasur · 5 items · $280</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="text-align:center;font-size:0.75rem;color:var(--muted);margin-top:0.5rem;">Manufacturer Dashboard</p>
+      </div>
+
+      <!-- Product Management -->
+      <div>
+        <div class="screen-mockup">
+          <div class="screen-header">
+            <div class="screen-dot" style="background:#ef4444"></div>
+            <div class="screen-dot" style="background:#f59e0b"></div>
+            <div class="screen-dot" style="background:#10b981"></div>
+            <div class="screen-title">Manufacturer — Products</div>
+          </div>
+          <div class="screen-body">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div class="tg-header"><span class="tg-back">‹</span><span class="tg-title">Products</span></div>
+                <div class="tg-body">
+                  <div class="tg-card" style="background:var(--accent);border-color:var(--accent);color:white;text-align:center;font-size:0.65rem;font-weight:700;margin-bottom:0.5rem;">➕ Add New Product</div>
+                  <div class="tg-product-row">
+                    <div class="tg-product-icon" style="background:rgba(59,130,246,0.2);">💊</div>
+                    <div style="flex:1"><div style="font-weight:700;font-size:0.65rem;">Paracetamol 500mg</div><div style="color:var(--muted);font-size:0.55rem;">$9.00 / box · In stock</div></div>
+                    <span class="tg-tag tag-green">Active</span>
+                  </div>
+                  <div class="tg-product-row">
+                    <div class="tg-product-icon" style="background:rgba(16,185,129,0.2);">🥤</div>
+                    <div style="flex:1"><div style="font-weight:700;font-size:0.65rem;">Coca Cola 1L</div><div style="color:var(--muted);font-size:0.55rem;">$8.00 / case · In stock</div></div>
+                    <span class="tg-tag tag-green">Active</span>
+                  </div>
+                  <div class="tg-product-row">
+                    <div class="tg-product-icon" style="background:rgba(245,158,11,0.2);">🍞</div>
+                    <div style="flex:1"><div style="font-weight:700;font-size:0.65rem;">Whole Grain Bread</div><div style="color:var(--muted);font-size:0.55rem;">$3.50 / loaf · Low stock</div></div>
+                    <span class="tg-tag tag-amber">Low</span>
+                  </div>
+                  <div class="tg-product-row">
+                    <div class="tg-product-icon" style="background:rgba(100,116,139,0.2);">🧴</div>
+                    <div style="flex:1"><div style="font-weight:700;font-size:0.65rem;">Hand Sanitizer</div><div style="color:var(--muted);font-size:0.55rem;">$5.00 / bottle · Archived</div></div>
+                    <span class="tg-tag" style="background:rgba(100,116,139,0.2);color:#94a3b8;">Off</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="text-align:center;font-size:0.75rem;color:var(--muted);margin-top:0.5rem;">Product Management</p>
+      </div>
+
+      <!-- Order Detail -->
+      <div>
+        <div class="screen-mockup">
+          <div class="screen-header">
+            <div class="screen-dot" style="background:#ef4444"></div>
+            <div class="screen-dot" style="background:#f59e0b"></div>
+            <div class="screen-dot" style="background:#10b981"></div>
+            <div class="screen-title">Manufacturer — Order Detail</div>
+          </div>
+          <div class="screen-body">
+            <div class="phone-frame">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div class="tg-header"><span class="tg-back">‹</span><span class="tg-title">Order #ORD-041</span></div>
+                <div class="tg-body">
+                  <div class="tg-card" style="margin-bottom:0.5rem;">
+                    <div style="font-size:0.58rem;color:var(--muted);">Agent</div>
+                    <div style="font-size:0.68rem;font-weight:700;">👤 Bobur Rahimov</div>
+                    <div style="font-size:0.58rem;color:var(--muted);margin-top:0.2rem;">📍 45 Navoi St, Tashkent</div>
+                    <div style="font-size:0.58rem;color:var(--muted);">🕐 Today 14:32</div>
+                  </div>
+                  <div class="tg-section-label">Items Ordered</div>
+                  <div class="tg-card">
+                    <div class="tg-card-row"><span style="font-size:0.62rem;">💊 Paracetamol ×2</span><span style="font-size:0.62rem;font-weight:700;color:var(--accent);">$18.00</span></div>
+                  </div>
+                  <div class="tg-card">
+                    <div class="tg-card-row"><span style="font-size:0.62rem;">🥤 Coca Cola ×3</span><span style="font-size:0.62rem;font-weight:700;color:var(--accent);">$24.00</span></div>
+                  </div>
+                  <div class="tg-card" style="background:rgba(16,185,129,0.05);">
+                    <div class="tg-card-row"><span style="font-size:0.65rem;font-weight:700;">TOTAL</span><span style="font-size:0.75rem;font-weight:800;color:var(--green);">$42.00</span></div>
+                  </div>
+                  <div style="display:flex;gap:0.35rem;margin-top:0.5rem;">
+                    <div class="tg-btn green" style="margin:0;font-size:0.6rem;">✓ Confirm</div>
+                    <div class="tg-btn" style="margin:0;background:var(--red);font-size:0.6rem;">✗ Reject</div>
+                    <div class="tg-btn" style="margin:0;background:var(--surface2);font-size:0.6rem;border:1px solid var(--border);">🚚 Ship</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="text-align:center;font-size:0.75rem;color:var(--muted);margin-top:0.5rem;">Order Detail + Actions</p>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- USER FLOW -->
+  <div class="section" id="flow">
+    <div class="section-label">User Journey</div>
+    <h2>End-to-End Order Flow</h2>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-content">
+          <h4>Agent Opens TWA via Telegram Bot</h4>
+          <p>Agent taps the bot's menu button or inline link. Telegram passes <code>initData</code> with the user's Telegram ID. Backend validates HMAC signature and identifies the agent account.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-content">
+          <h4>Agent Browses Product Catalog</h4>
+          <p>Products load from Supabase with photos, prices, and stock levels. Agent uses category filters and search to find items quickly. Quantities are adjusted with +/− buttons.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-content">
+          <h4>Agent Enters Customer Address</h4>
+          <p>Agent types the delivery address or taps "Share GPS Location" to auto-fill coordinates. Telegram's LocationManager API is used for GPS. Notes can be added per item or for the whole order.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-content">
+          <h4>Agent Submits Order</h4>
+          <p>Tapping the MainButton (Telegram's native green bottom button) confirms the order. Order is written to Supabase <code>orders</code> table with status <code>pending</code>. Supabase Realtime broadcasts the change.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">5</div>
+        <div class="flow-content">
+          <h4>Manufacturer Gets Notified Instantly</h4>
+          <p>Supabase Realtime triggers a server-side function that sends a Telegram Bot notification to the manufacturer's chat: order summary, agent name, address, and total. Manufacturer's TWA dashboard updates live.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">6</div>
+        <div class="flow-content">
+          <h4>Manufacturer Reviews & Updates Status</h4>
+          <p>Manufacturer opens the TWA, sees the order with full details, and taps Confirm / Reject / Ship. Status updates are written to Supabase and broadcast back to the agent's interface via Realtime.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">7</div>
+        <div class="flow-content">
+          <h4>Agent Gets Status Notification</h4>
+          <p>Agent receives a Telegram push notification: "Your order #ORD-041 has been confirmed ✅". Agent can tap it to open the TWA and see full details in their order history.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- DATABASE SCHEMA -->
+  <div class="section" id="database">
+    <div class="section-label">Supabase Schema</div>
+    <h2>Database Design</h2>
+    <p>All tables use UUID primary keys, RLS policies per role, and Realtime enabled on <code>orders</code> and <code>order_items</code>.</p>
+
+    <div class="table-block">
+      <div class="table-header">
+        <div class="table-icon">👥</div>
+        <div>
+          <div class="table-name">users</div>
+          <div class="table-desc">Telegram users registered in the system — manufacturers and agents</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Tags</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="col-name">id</td><td class="col-type">uuid</td><td><span class="col-pk col-tag">PK</span></td><td>Auto-generated UUID</td></tr>
+          <tr><td class="col-name">telegram_id</td><td class="col-type">bigint</td><td><span class="col-tag tag-amber">UNIQUE</span></td><td>Telegram user ID from initData</td></tr>
+          <tr><td class="col-name">telegram_username</td><td class="col-type">text</td><td></td><td>@username (nullable)</td></tr>
+          <tr><td class="col-name">full_name</td><td class="col-type">text</td><td></td><td>First + last name from Telegram</td></tr>
+          <tr><td class="col-name">phone</td><td class="col-type">text</td><td></td><td>Optional phone number</td></tr>
+          <tr><td class="col-name">role</td><td class="col-type">text</td><td><span class="col-tag tag-blue">ENUM</span></td><td>'manufacturer' | 'agent'</td></tr>
+          <tr><td class="col-name">is_active</td><td class="col-type">boolean</td><td></td><td>Can be suspended by manufacturer</td></tr>
+          <tr><td class="col-name">manufacturer_id</td><td class="col-type">uuid</td><td><span class="col-fk col-tag">FK → users</span></td><td>Which manufacturer this agent belongs to</td></tr>
+          <tr><td class="col-name">created_at</td><td class="col-type">timestamptz</td><td></td><td>Registration timestamp</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-block">
+      <div class="table-header">
+        <div class="table-icon">📦</div>
+        <div>
+          <div class="table-name">products</div>
+          <div class="table-desc">Product catalog managed by the manufacturer</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Tags</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="col-name">id</td><td class="col-type">uuid</td><td><span class="col-pk col-tag">PK</span></td><td>Auto-generated UUID</td></tr>
+          <tr><td class="col-name">manufacturer_id</td><td class="col-type">uuid</td><td><span class="col-fk col-tag">FK → users</span></td><td>Product owner</td></tr>
+          <tr><td class="col-name">name</td><td class="col-type">text</td><td><span class="col-tag tag-amber">NOT NULL</span></td><td>Product display name</td></tr>
+          <tr><td class="col-name">description</td><td class="col-type">text</td><td></td><td>Optional description</td></tr>
+          <tr><td class="col-name">category</td><td class="col-type">text</td><td></td><td>'medicine' | 'drink' | 'food' | 'other'</td></tr>
+          <tr><td class="col-name">unit</td><td class="col-type">text</td><td></td><td>Unit of sale: 'box', 'bottle', 'case', etc.</td></tr>
+          <tr><td class="col-name">price</td><td class="col-type">numeric(12,2)</td><td><span class="col-tag tag-amber">NOT NULL</span></td><td>Price per unit</td></tr>
+          <tr><td class="col-name">min_order_qty</td><td class="col-type">integer</td><td></td><td>Minimum quantity per order (default: 1)</td></tr>
+          <tr><td class="col-name">stock_qty</td><td class="col-type">integer</td><td></td><td>Current stock level (null = unlimited)</td></tr>
+          <tr><td class="col-name">image_url</td><td class="col-type">text</td><td></td><td>Supabase Storage URL for product image</td></tr>
+          <tr><td class="col-name">is_active</td><td class="col-type">boolean</td><td></td><td>Visible to agents when true</td></tr>
+          <tr><td class="col-name">created_at</td><td class="col-type">timestamptz</td><td></td><td>Creation timestamp</td></tr>
+          <tr><td class="col-name">updated_at</td><td class="col-type">timestamptz</td><td></td><td>Last update timestamp</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-block">
+      <div class="table-header">
+        <div class="table-icon">🛒</div>
+        <div>
+          <div class="table-name">orders</div>
+          <div class="table-desc">Orders submitted by agents with delivery location and current status</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Tags</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="col-name">id</td><td class="col-type">uuid</td><td><span class="col-pk col-tag">PK</span></td><td>Auto-generated UUID</td></tr>
+          <tr><td class="col-name">order_number</td><td class="col-type">text</td><td><span class="col-tag tag-amber">UNIQUE</span></td><td>Human-readable: ORD-00041</td></tr>
+          <tr><td class="col-name">agent_id</td><td class="col-type">uuid</td><td><span class="col-fk col-tag">FK → users</span></td><td>Agent who placed the order</td></tr>
+          <tr><td class="col-name">manufacturer_id</td><td class="col-type">uuid</td><td><span class="col-fk col-tag">FK → users</span></td><td>Manufacturer receiving the order</td></tr>
+          <tr><td class="col-name">status</td><td class="col-type">text</td><td><span class="col-tag tag-blue">ENUM</span></td><td>'pending' | 'confirmed' | 'shipped' | 'delivered' | 'rejected' | 'cancelled'</td></tr>
+          <tr><td class="col-name">delivery_address</td><td class="col-type">text</td><td></td><td>Free-text customer address</td></tr>
+          <tr><td class="col-name">delivery_lat</td><td class="col-type">numeric(10,7)</td><td></td><td>GPS latitude (optional)</td></tr>
+          <tr><td class="col-name">delivery_lng</td><td class="col-type">numeric(10,7)</td><td></td><td>GPS longitude (optional)</td></tr>
+          <tr><td class="col-name">customer_name</td><td class="col-type">text</td><td></td><td>Customer name at delivery address</td></tr>
+          <tr><td class="col-name">customer_phone</td><td class="col-type">text</td><td></td><td>Customer contact number</td></tr>
+          <tr><td class="col-name">notes</td><td class="col-type">text</td><td></td><td>Agent notes for the whole order</td></tr>
+          <tr><td class="col-name">total_amount</td><td class="col-type">numeric(12,2)</td><td></td><td>Computed sum of all line items</td></tr>
+          <tr><td class="col-name">rejected_reason</td><td class="col-type">text</td><td></td><td>Reason when status = 'rejected'</td></tr>
+          <tr><td class="col-name">created_at</td><td class="col-type">timestamptz</td><td><span class="col-tag tag-green">REALTIME</span></td><td>Order submission time</td></tr>
+          <tr><td class="col-name">updated_at</td><td class="col-type">timestamptz</td><td><span class="col-tag tag-green">REALTIME</span></td><td>Last status change</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-block">
+      <div class="table-header">
+        <div class="table-icon">📋</div>
+        <div>
+          <div class="table-name">order_items</div>
+          <div class="table-desc">Individual line items within each order</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Tags</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="col-name">id</td><td class="col-type">uuid</td><td><span class="col-pk col-tag">PK</span></td><td>Auto-generated UUID</td></tr>
+          <tr><td class="col-name">order_id</td><td class="col-type">uuid</td><td><span class="col-fk col-tag">FK → orders</span></td><td>Parent order</td></tr>
+          <tr><td class="col-name">product_id</td><td class="col-type">uuid</td><td><span class="col-fk col-tag">FK → products</span></td><td>Ordered product</td></tr>
+          <tr><td class="col-name">product_name</td><td class="col-type">text</td><td></td><td>Snapshot of name at order time</td></tr>
+          <tr><td class="col-name">unit_price</td><td class="col-type">numeric(12,2)</td><td></td><td>Snapshot of price at order time</td></tr>
+          <tr><td class="col-name">quantity</td><td class="col-type">integer</td><td><span class="col-tag tag-amber">NOT NULL</span></td><td>Quantity ordered</td></tr>
+          <tr><td class="col-name">subtotal</td><td class="col-type">numeric(12,2)</td><td></td><td>unit_price × quantity</td></tr>
+          <tr><td class="col-name">item_notes</td><td class="col-type">text</td><td></td><td>Per-item notes from agent</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-block">
+      <div class="table-header">
+        <div class="table-icon">🔔</div>
+        <div>
+          <div class="table-name">notifications</div>
+          <div class="table-desc">Log of all Telegram push notifications sent</div>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Tags</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="col-name">id</td><td class="col-type">uuid</td><td><span class="col-pk col-tag">PK</span></td><td>Auto-generated UUID</td></tr>
+          <tr><td class="col-name">recipient_id</td><td class="col-type">uuid</td><td><span class="col-fk col-tag">FK → users</span></td><td>Who received the notification</td></tr>
+          <tr><td class="col-name">order_id</td><td class="col-type">uuid</td><td><span class="col-fk col-tag">FK → orders</span></td><td>Related order</td></tr>
+          <tr><td class="col-name">message</td><td class="col-type">text</td><td></td><td>Notification text sent</td></tr>
+          <tr><td class="col-name">sent_at</td><td class="col-type">timestamptz</td><td></td><td>When the message was sent</td></tr>
+          <tr><td class="col-name">status</td><td class="col-type">text</td><td></td><td>'sent' | 'failed'</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SQL -->
+    <h3 style="margin-top:2rem; margin-bottom:1rem;">Supabase SQL (Migration)</h3>
+    <div class="code-block" style="position:relative;">
+      <div class="code-label">SQL</div>
+<pre><span class="cm">-- Enable UUID extension</span>
+<span class="kw">CREATE EXTENSION IF NOT EXISTS</span> <span class="str">"uuid-ossp"</span>;
+
+<span class="cm">-- USERS</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">users</span> (
+  id              <span class="tp">uuid</span> <span class="kw">PRIMARY KEY DEFAULT</span> uuid_generate_v4(),
+  telegram_id     <span class="tp">bigint</span> <span class="kw">UNIQUE NOT NULL</span>,
+  telegram_username <span class="tp">text</span>,
+  full_name       <span class="tp">text NOT NULL</span>,
+  phone           <span class="tp">text</span>,
+  role            <span class="tp">text NOT NULL CHECK</span> (role <span class="kw">IN</span> (<span class="str">'manufacturer'</span>, <span class="str">'agent'</span>)),
+  is_active       <span class="tp">boolean DEFAULT true</span>,
+  manufacturer_id <span class="tp">uuid REFERENCES</span> <span class="fn">users</span>(id),
+  created_at      <span class="tp">timestamptz DEFAULT now()</span>
+);
+
+<span class="cm">-- PRODUCTS</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">products</span> (
+  id              <span class="tp">uuid</span> <span class="kw">PRIMARY KEY DEFAULT</span> uuid_generate_v4(),
+  manufacturer_id <span class="tp">uuid NOT NULL REFERENCES</span> <span class="fn">users</span>(id),
+  name            <span class="tp">text NOT NULL</span>,
+  description     <span class="tp">text</span>,
+  category        <span class="tp">text</span>,
+  unit            <span class="tp">text</span>,
+  price           <span class="tp">numeric(12,2) NOT NULL</span>,
+  min_order_qty   <span class="tp">integer DEFAULT 1</span>,
+  stock_qty       <span class="tp">integer</span>,
+  image_url       <span class="tp">text</span>,
+  is_active       <span class="tp">boolean DEFAULT true</span>,
+  created_at      <span class="tp">timestamptz DEFAULT now()</span>,
+  updated_at      <span class="tp">timestamptz DEFAULT now()</span>
+);
+
+<span class="cm">-- ORDERS</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">orders</span> (
+  id               <span class="tp">uuid</span> <span class="kw">PRIMARY KEY DEFAULT</span> uuid_generate_v4(),
+  order_number     <span class="tp">text UNIQUE NOT NULL</span>,
+  agent_id         <span class="tp">uuid NOT NULL REFERENCES</span> <span class="fn">users</span>(id),
+  manufacturer_id  <span class="tp">uuid NOT NULL REFERENCES</span> <span class="fn">users</span>(id),
+  status           <span class="tp">text NOT NULL DEFAULT</span> <span class="str">'pending'</span>
+                   <span class="kw">CHECK</span> (status <span class="kw">IN</span> (
+                     <span class="str">'pending'</span>,<span class="str">'confirmed'</span>,<span class="str">'shipped'</span>,
+                     <span class="str">'delivered'</span>,<span class="str">'rejected'</span>,<span class="str">'cancelled'</span>)),
+  delivery_address <span class="tp">text</span>,
+  delivery_lat     <span class="tp">numeric(10,7)</span>,
+  delivery_lng     <span class="tp">numeric(10,7)</span>,
+  customer_name    <span class="tp">text</span>,
+  customer_phone   <span class="tp">text</span>,
+  notes            <span class="tp">text</span>,
+  total_amount     <span class="tp">numeric(12,2) DEFAULT 0</span>,
+  rejected_reason  <span class="tp">text</span>,
+  created_at       <span class="tp">timestamptz DEFAULT now()</span>,
+  updated_at       <span class="tp">timestamptz DEFAULT now()</span>
+);
+
+<span class="cm">-- ORDER ITEMS</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">order_items</span> (
+  id           <span class="tp">uuid</span> <span class="kw">PRIMARY KEY DEFAULT</span> uuid_generate_v4(),
+  order_id     <span class="tp">uuid NOT NULL REFERENCES</span> <span class="fn">orders</span>(id) <span class="kw">ON DELETE CASCADE</span>,
+  product_id   <span class="tp">uuid REFERENCES</span> <span class="fn">products</span>(id),
+  product_name <span class="tp">text NOT NULL</span>,
+  unit_price   <span class="tp">numeric(12,2) NOT NULL</span>,
+  quantity     <span class="tp">integer NOT NULL CHECK</span> (quantity > 0),
+  subtotal     <span class="tp">numeric(12,2) GENERATED ALWAYS AS</span> (unit_price * quantity) <span class="kw">STORED</span>,
+  item_notes   <span class="tp">text</span>
+);
+
+<span class="cm">-- NOTIFICATIONS LOG</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">notifications</span> (
+  id           <span class="tp">uuid</span> <span class="kw">PRIMARY KEY DEFAULT</span> uuid_generate_v4(),
+  recipient_id <span class="tp">uuid NOT NULL REFERENCES</span> <span class="fn">users</span>(id),
+  order_id     <span class="tp">uuid REFERENCES</span> <span class="fn">orders</span>(id),
+  message      <span class="tp">text</span>,
+  sent_at      <span class="tp">timestamptz DEFAULT now()</span>,
+  status       <span class="tp">text DEFAULT</span> <span class="str">'sent'</span>
+);
+
+<span class="cm">-- Enable Realtime on orders</span>
+<span class="kw">ALTER PUBLICATION</span> supabase_realtime <span class="kw">ADD TABLE</span> orders;
+<span class="kw">ALTER PUBLICATION</span> supabase_realtime <span class="kw">ADD TABLE</span> order_items;
+
+<span class="cm">-- Auto-update updated_at</span>
+<span class="kw">CREATE OR REPLACE FUNCTION</span> <span class="fn">update_updated_at</span>()
+<span class="kw">RETURNS TRIGGER AS</span> $$
+<span class="kw">BEGIN</span>
+  <span class="kw">NEW</span>.updated_at = now();
+  <span class="kw">RETURN NEW</span>;
+<span class="kw">END</span>;
+$$ <span class="kw">LANGUAGE</span> plpgsql;
+
+<span class="kw">CREATE TRIGGER</span> orders_updated_at
+  <span class="kw">BEFORE UPDATE ON</span> <span class="fn">orders</span>
+  <span class="kw">FOR EACH ROW EXECUTE FUNCTION</span> <span class="fn">update_updated_at</span>();
+
+<span class="cm">-- Auto-generate order number</span>
+<span class="kw">CREATE SEQUENCE</span> order_seq <span class="kw">START WITH</span> 1;
+<span class="kw">CREATE OR REPLACE FUNCTION</span> <span class="fn">gen_order_number</span>()
+<span class="kw">RETURNS TRIGGER AS</span> $$
+<span class="kw">BEGIN</span>
+  <span class="kw">NEW</span>.order_number = <span class="str">'ORD-'</span> || LPAD(nextval(<span class="str">'order_seq'</span>)::text, 5, <span class="str">'0'</span>);
+  <span class="kw">RETURN NEW</span>;
+<span class="kw">END</span>;
+$$ <span class="kw">LANGUAGE</span> plpgsql;
+
+<span class="kw">CREATE TRIGGER</span> before_insert_order
+  <span class="kw">BEFORE INSERT ON</span> <span class="fn">orders</span>
+  <span class="kw">FOR EACH ROW EXECUTE FUNCTION</span> <span class="fn">gen_order_number</span>();
+
+<span class="cm">-- RLS Policies</span>
+<span class="kw">ALTER TABLE</span> users <span class="kw">ENABLE ROW LEVEL SECURITY</span>;
+<span class="kw">ALTER TABLE</span> products <span class="kw">ENABLE ROW LEVEL SECURITY</span>;
+<span class="kw">ALTER TABLE</span> orders <span class="kw">ENABLE ROW LEVEL SECURITY</span>;
+<span class="kw">ALTER TABLE</span> order_items <span class="kw">ENABLE ROW LEVEL SECURITY</span>;
+
+<span class="cm">-- Agents: see only their own orders</span>
+<span class="kw">CREATE POLICY</span> agent_orders <span class="kw">ON</span> orders
+  <span class="kw">FOR ALL USING</span> (agent_id = auth.uid() <span class="kw">OR</span> manufacturer_id = auth.uid());</pre>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- AI PROMPT -->
+  <div class="section" id="prompt">
+    <div class="section-label">Ready-to-Use Prompt</div>
+    <h2>Google AI Studio Prompt</h2>
+    <p>Copy this prompt directly into Google AI Studio (Gemini) to generate the full implementation code.</p>
+
+    <div style="position:relative;">
+      <div class="prompt-box" id="promptText">You are a senior full-stack developer specializing in Telegram Web Apps (TWA) and Supabase. I need you to build a complete production-ready order management system as a Telegram Mini App.
+
+## Project Overview
+A mobile-first Telegram Mini App that connects product manufacturers (or sellers) with their sales agents. Agents visit customer locations, take orders on-site, and submit them through the app. Manufacturers see all orders in real-time and manage fulfillment.
+
+Products can include medicines, drinks, food, and other categories.
+
+---
+
+## Tech Stack
+- **Frontend**: React 18 + TypeScript + Vite
+- **Styling**: Tailwind CSS (follow Telegram's native UI patterns)
+- **Telegram**: @twa-dev/sdk for Telegram Web App API
+- **Backend**: Supabase (PostgreSQL + Auth + Realtime + Storage + Edge Functions)
+- **State**: Zustand + React Query (TanStack)
+- **Routing**: React Router v6
+- **Bot**: Telegram Bot API (for push notifications)
+- **Deploy**: Vercel for frontend, Supabase Edge Functions for backend logic
+
+---
+
+## Two Roles — Two Interfaces
+
+### 🏭 MANUFACTURER Interface
+Tab 1 — Dashboard:
+- KPI cards: total orders today, revenue today, pending orders count, active agents count
+- Real-time order feed (Supabase Realtime subscription on `orders` table)
+- Each order card shows: order number, agent name, delivery address, item count, total, time, status badge
+- Tap order → full detail screen with action buttons: Confirm / Ship / Reject (with rejection reason input)
+- Filter bar: by status, by agent, by date range
+
+Tab 2 — Products:
+- Product list with photo, name, category, price, stock level, active/inactive toggle
+- FAB button → Add Product bottom sheet: name, category, unit, price, min qty, stock qty, photo upload to Supabase Storage
+- Edit/archive existing products
+
+Tab 3 — Agents:
+- List of registered agents with name, Telegram username, total orders, status (active/suspended)
+- Tap agent → agent detail with order history
+- Invite agent via Telegram username
+
+Tab 4 — Analytics:
+- Simple bar chart: orders per day (last 7 days)
+- Top 5 agents by revenue
+- Top 5 products by quantity sold
+
+### 👤 AGENT Interface
+Screen 1 — Home:
+- Welcome message with agent name
+- Stats: orders today, revenue today
+- Quick action: "New Order" button (large, prominent)
+- Recent orders list (last 5)
+
+Screen 2 — Catalog (New Order flow):
+- Grid/list toggle product view with photos
+- Category filter chips (All, Medicine, Drinks, Food, Other)
+- Search bar
+- Each product shows: photo, name, unit, price, +/- quantity stepper
+- Sticky bottom bar: "View Cart (N items)" button → opens cart
+
+Screen 3 — Cart & Checkout:
+- List of selected items with quantities and subtotals
+- Customer address text input
+- "Use my current location" button (Telegram.WebApp.LocationManager)
+- Customer name + phone fields (optional)
+- Order notes textarea
+- Total amount display
+- Telegram MainButton labeled "Submit Order ✅" — submit on tap
+- On success: show confirmation with order number, then navigate to order history
+
+Screen 4 — My Orders:
+- List of agent's own orders with status badges
+- Color-coded: pending (amber), confirmed (blue), shipped (purple), delivered (green), rejected (red)
+- Tap to see full order detail
+
+---
+
+## Authentication
+- No email/password — use Telegram initData exclusively
+- On app load: parse window.Telegram.WebApp.initData
+- Send to Supabase Edge Function `/auth/telegram` for HMAC validation
+- Edge Function verifies signature using BOT_TOKEN, returns Supabase JWT
+- Store JWT, use for all subsequent Supabase calls
+- If user not in `users` table → auto-register with their Telegram profile data
+- Role is set manually by manufacturer (default: agent) — first user to register becomes manufacturer
+
+---
+
+## Supabase Database Schema (implement exactly)
+
+```sql
+-- Use this exact schema:
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE users (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  telegram_id bigint UNIQUE NOT NULL,
+  telegram_username text,
+  full_name text NOT NULL,
+  phone text,
+  role text NOT NULL CHECK (role IN ('manufacturer', 'agent')),
+  is_active boolean DEFAULT true,
+  manufacturer_id uuid REFERENCES users(id),
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE products (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  manufacturer_id uuid NOT NULL REFERENCES users(id),
+  name text NOT NULL,
+  description text,
+  category text,
+  unit text,
+  price numeric(12,2) NOT NULL,
+  min_order_qty integer DEFAULT 1,
+  stock_qty integer,
+  image_url text,
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE orders (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  order_number text UNIQUE NOT NULL,
+  agent_id uuid NOT NULL REFERENCES users(id),
+  manufacturer_id uuid NOT NULL REFERENCES users(id),
+  status text NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending','confirmed','shipped','delivered','rejected','cancelled')),
+  delivery_address text,
+  delivery_lat numeric(10,7),
+  delivery_lng numeric(10,7),
+  customer_name text,
+  customer_phone text,
+  notes text,
+  total_amount numeric(12,2) DEFAULT 0,
+  rejected_reason text,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE order_items (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  order_id uuid NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+  product_id uuid REFERENCES products(id),
+  product_name text NOT NULL,
+  unit_price numeric(12,2) NOT NULL,
+  quantity integer NOT NULL CHECK (quantity > 0),
+  subtotal numeric(12,2) GENERATED ALWAYS AS (unit_price * quantity) STORED,
+  item_notes text
+);
+
+CREATE TABLE notifications (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  recipient_id uuid NOT NULL REFERENCES users(id),
+  order_id uuid REFERENCES orders(id),
+  message text,
+  sent_at timestamptz DEFAULT now(),
+  status text DEFAULT 'sent'
+);
+```
+
+Enable Realtime on `orders` and `order_items`.
+Enable RLS on all tables.
+Write RLS policies so: agents see only their own orders, manufacturers see all orders belonging to them.
+
+---
+
+## Supabase Edge Functions to implement
+
+1. **`/auth/telegram`** — POST
+   - Input: { initData: string }
+   - Validate HMAC using BOT_TOKEN env var
+   - Parse user data from initData
+   - Upsert user in `users` table
+   - Return Supabase custom JWT
+
+2. **`/notify`** — called internally on order INSERT trigger
+   - Send Telegram message to manufacturer's chat_id via Bot API
+   - Message format: "🆕 New order #{order_number}\n👤 Agent: {agent_name}\n📍 {delivery_address}\n💰 Total: ${total_amount}\n\nOpen app to confirm."
+
+3. **`/notify-agent`** — called on order status UPDATE trigger
+   - Send Telegram message to agent's chat_id
+   - Message format: "✅ Order #{order_number} status updated to: {status}"
+
+---
+
+## TWA-Specific Requirements
+- Use Telegram.WebApp.MainButton for primary CTAs
+- Use Telegram.WebApp.BackButton on all sub-screens
+- Use Telegram.WebApp.HapticFeedback.impactOccurred('light') on button taps
+- Use Telegram.WebApp.showAlert() and showConfirm() for important confirmations
+- Follow user's Telegram color theme (var(--tg-theme-bg-color), var(--tg-theme-button-color), etc.)
+- App must work in both light and dark Telegram themes
+- Expand to full viewport: Telegram.WebApp.expand()
+- Use Telegram.WebApp.LocationManager for GPS (request permission gracefully)
+- Handle safe areas for iOS bottom bar
+
+---
+
+## Project Structure to generate
+
+```
+/src
+  /components
+    /manufacturer
+      Dashboard.tsx
+      OrderList.tsx
+      OrderDetail.tsx
+      ProductManager.tsx
+      AgentManager.tsx
+      Analytics.tsx
+    /agent
+      AgentHome.tsx
+      ProductCatalog.tsx
+      Cart.tsx
+      Checkout.tsx
+      OrderHistory.tsx
+    /shared
+      BottomNav.tsx
+      StatusBadge.tsx
+      ProductCard.tsx
+      LoadingScreen.tsx
+  /hooks
+    useAuth.ts
+    useOrders.ts
+    useProducts.ts
+    useRealtime.ts
+  /lib
+    supabase.ts
+    telegram.ts
+    notifications.ts
+  /store
+    authStore.ts
+    cartStore.ts
+  /types
+    index.ts
+  App.tsx
+  main.tsx
+/supabase
+  /functions
+    /auth-telegram
+      index.ts
+    /notify
+      index.ts
+    /notify-agent
+      index.ts
+  /migrations
+    001_initial.sql
+```
+
+---
+
+## Deliverables
+1. Full React + TypeScript source code for all screens listed above
+2. Complete Supabase migration SQL file
+3. All three Edge Functions with HMAC validation
+4. Environment variables list (.env.example)
+5. README.md with setup instructions (Supabase project setup, Bot creation via BotFather, TWA registration, Vercel deploy)
+6. supabase/config.toml for local development
+
+Please generate all files completely. Do not truncate or summarize — output full working code for each file. Start with the database migration, then the Edge Functions, then the React components from most foundational to most complex.</div>
+      <button class="copy-btn" onclick="copyPrompt()">📋 Copy</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function copyPrompt() {
+  const text = document.getElementById('promptText').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => btn.textContent = '📋 Copy', 2000);
+  });
+}
+</script>
+
+</body>
+</html>
