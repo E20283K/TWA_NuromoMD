@@ -6,9 +6,13 @@ export const initTWA = () => {
   tg.ready();
   tg.expand();
   
-  // Apply theme colors to body
-  document.body.style.backgroundColor = tg.themeParams.bg_color || '#ffffff';
-  document.body.style.color = tg.themeParams.text_color || '#000000';
+  // Apply theme colors to body with safety check
+  if (tg.themeParams && tg.themeParams.bg_color) {
+    document.body.style.backgroundColor = tg.themeParams.bg_color;
+  }
+  if (tg.themeParams && tg.themeParams.text_color) {
+    document.body.style.color = tg.themeParams.text_color;
+  }
 };
 
 export const haptic = {

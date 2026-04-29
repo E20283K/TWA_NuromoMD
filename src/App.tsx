@@ -23,7 +23,7 @@ import { LoadingScreen } from './components/shared/LoadingScreen';
 const queryClient = new QueryClient();
 
 const AppContent: React.FC = () => {
-  const { user, isLoading, login } = useAuthStore();
+  const { user, isLoading, login, error } = useAuthStore();
 
   useEffect(() => {
     initTWA();
@@ -34,11 +34,20 @@ const AppContent: React.FC = () => {
     return <LoadingScreen />;
   }
 
-  if (!user) {
+  if (error || !user) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center">
-        <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
-        <p className="text-tg-hint mb-6">Please open this app through the official Telegram bot.</p>
+      <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center bg-tg-bg text-tg-text">
+        <div className="text-6xl mb-4">🚫</div>
+        <h1 className="text-2xl font-bold mb-2">Authentication Error</h1>
+        <p className="text-tg-hint mb-6 max-w-xs mx-auto">
+          {error || 'Please open this app through the official Telegram bot.'}
+        </p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="bg-tg-button text-tg-button-text px-6 py-3 rounded-xl font-bold"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
