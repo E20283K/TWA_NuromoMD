@@ -30,7 +30,7 @@ body {
 }
 
 .safe-top {
-  padding-top: calc(var(--safe-area-top) + 24px);
+  padding-top: calc(var(--safe-area-top) + 48px);
 }
 
 /* Telegram Native Feel */
