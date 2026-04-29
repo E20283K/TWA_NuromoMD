@@ -21,6 +21,7 @@ import { BottomNav } from './components/shared/BottomNav';
 import { LoadingScreen } from './components/shared/LoadingScreen';
 
 import { BackButtonManager } from './components/shared/BackButtonManager';
+import { LinkManufacturer } from './components/agent/LinkManufacturer';
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,10 @@ const AppContent: React.FC = () => {
         </button>
       </div>
     );
+  }
+
+  if (user.role === 'agent' && !user.manufacturer_id) {
+    return <LinkManufacturer />;
   }
 
   if (user.role === 'agent' && !user.is_active) {
