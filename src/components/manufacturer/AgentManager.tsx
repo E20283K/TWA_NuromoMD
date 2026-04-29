@@ -49,14 +49,37 @@ export const AgentManager: React.FC = () => {
     const botUsername = import.meta.env.VITE_BOT_USERNAME?.replace('@', '') || 'YourBotName';
     const inviteLink = `https://t.me/${botUsername}?start=invite_${user?.id}`;
     
-    // Attempt to copy to clipboard
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(inviteLink)
-        .then(() => tg.showAlert('Invite link copied to clipboard! Send it to your agents.'))
-        .catch(() => tg.showAlert(`Invite link: ${inviteLink}`));
-    } else {
-      tg.showAlert(`Invite link: ${inviteLink}`);
-    }
+    const copyToClipboard = (text: string) => {
+      // Primary method: navigator.clipboard
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+      }
+      
+      // Fallback method: hidden textarea
+      return new Promise<void>((resolve, reject) => {
+        try {
+          const textArea = document.createElement("textarea");
+          textArea.value = text;
+          // Ensure it's not visible but part of the document
+          textArea.style.position = "fixed";
+          textArea.style.left = "-9999px";
+          textArea.style.top = "0";
+          document.body.appendChild(textArea);
+          textArea.focus();
+          textArea.select();
+          const successful = document.execCommand('copy');
+          document.body.removeChild(textArea);
+          if (successful) resolve();
+          else reject(new Error('Copy command failed'));
+        } catch (err) {
+          reject(err);
+        }
+      });
+    };
+
+    copyToClipboard(inviteLink)
+      .then(() => tg.showAlert('Invite link copied to clipboard! Send it to your agents.'))
+      .catch(() => tg.showAlert(`Invite link: ${inviteLink}`));
   };
 
   return (

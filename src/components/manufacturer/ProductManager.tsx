@@ -11,6 +11,7 @@ export const ProductManager: React.FC = () => {
   const { products, addProduct, updateProduct } = useProducts(user?.id);
   const [search, setSearch] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [newProduct, setNewProduct] = useState<Partial<Product>>({
     name: '',
@@ -30,6 +31,7 @@ export const ProductManager: React.FC = () => {
     }
 
     try {
+      setIsSubmitting(true);
       haptic.impact('medium');
       await addProduct({
         ...newProduct,
@@ -48,6 +50,8 @@ export const ProductManager: React.FC = () => {
       tg.showAlert('Product added successfully');
     } catch (error: any) {
       tg.showAlert(`Error: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -159,9 +163,10 @@ export const ProductManager: React.FC = () => {
 
               <button 
                 onClick={handleSaveProduct}
-                className="w-full bg-tg-button text-tg-button-text py-4 rounded-xl font-bold mt-4 shadow-lg shadow-tg-button/20"
+                disabled={isSubmitting}
+                className="w-full bg-tg-button text-tg-button-text py-4 rounded-xl font-bold mt-4 shadow-lg shadow-tg-button/20 disabled:opacity-50"
               >
-                Create Product
+                {isSubmitting ? 'Creating...' : 'Create Product'}
               </button>
             </div>
           </div>
