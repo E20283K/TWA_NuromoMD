@@ -51,6 +51,17 @@ export const useAuthStore = create<AuthState>((set) => ({
         const { data: allUsers } = await supabase.from('users').select('id').limit(1);
         const role = (!allUsers || allUsers.length === 0) ? 'manufacturer' : 'agent';
         
+        let manufacturerId = null;
+        let isActive = true;
+
+        if (role === 'agent') {
+          isActive = false; // Agent needs confirmation
+          const startParam = initDataUnsafe?.start_param;
+          if (startParam && startParam.startsWith('invite_')) {
+            manufacturerId = startParam.replace('invite_', '');
+          }
+        }
+        
         const { data: newUser, error: registerError } = await supabase
           .from('users')
           .insert({
@@ -58,6 +69,8 @@ export const useAuthStore = create<AuthState>((set) => ({
             telegram_username: initDataUnsafe?.user?.username || null,
             full_name: `${initDataUnsafe?.user?.first_name || ''} ${initDataUnsafe?.user?.last_name || ''}`.trim(),
             role,
+            manufacturer_id: manufacturerId,
+            is_active: isActive
           } as any)
           .select()
           .single();

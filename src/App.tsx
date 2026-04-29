@@ -20,6 +20,8 @@ import { AgentManager } from './components/manufacturer/AgentManager';
 import { BottomNav } from './components/shared/BottomNav';
 import { LoadingScreen } from './components/shared/LoadingScreen';
 
+import { BackButtonManager } from './components/shared/BackButtonManager';
+
 const queryClient = new QueryClient();
 
 const AppContent: React.FC = () => {
@@ -52,8 +54,27 @@ const AppContent: React.FC = () => {
     );
   }
 
+  if (user.role === 'agent' && !user.is_active) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center bg-tg-bg text-tg-text safe-top">
+        <div className="text-6xl mb-4">⏳</div>
+        <h1 className="text-2xl font-bold mb-2">Pending Approval</h1>
+        <p className="text-tg-hint mb-6 max-w-xs mx-auto">
+          Your account is waiting for approval from the manufacturer. Please check back later.
+        </p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="bg-tg-button text-tg-button-text px-6 py-3 rounded-xl font-bold"
+        >
+          Refresh Status
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-tg-bg text-tg-text pb-20 safe-top">
+      <BackButtonManager />
       <Routes>
         {user.role === 'agent' ? (
           <>

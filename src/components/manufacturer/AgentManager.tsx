@@ -52,7 +52,7 @@ export const AgentManager: React.FC = () => {
     }
     
     const botUsername = import.meta.env.VITE_BOT_USERNAME?.replace('@', '') || 'YourBotName';
-    const inviteLink = `https://t.me/${botUsername}?start=invite_${user?.id}`;
+    const inviteLink = `https://t.me/${botUsername}?startapp=invite_${user?.id}`;
     
     try {
       // Primary method: navigator.clipboard
