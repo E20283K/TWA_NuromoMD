@@ -5,7 +5,6 @@ import type { User } from '../../types';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { UserPlus, UserX, UserCheck, Search, Link as LinkIcon } from 'lucide-react';
 import { tg, haptic } from '../../lib/telegram';
-import { clsx } from 'clsx';
 
 export const AgentManager: React.FC = () => {
   const { user } = useAuthStore();
