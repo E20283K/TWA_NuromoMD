@@ -1,18 +1,61 @@
 import { supabase } from '../lib/supabase';
 
 /**
+ * Crops an image file to a square (1:1 aspect ratio) from the center.
+ */
+export const cropToSquare = (file: File): Promise<Blob> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const size = Math.min(img.width, img.height);
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return reject(new Error('Could not get canvas context'));
+
+        // Center crop
+        const x = (img.width - size) / 2;
+        const y = (img.height - size) / 2;
+
+        ctx.drawImage(img, x, y, size, size, 0, 0, size, size);
+        
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error('Canvas to Blob conversion failed'));
+        }, 'image/jpeg', 0.9);
+      };
+      img.onerror = () => reject(new Error('Image load failed'));
+    };
+    reader.onerror = () => reject(new Error('FileReader failed'));
+  });
+};
+
+/**
  * Upload a file to Supabase Storage and return the public URL.
- * Uses the native HTML file input (hidden) triggered by a button click.
  */
 export const uploadProductImage = async (file: File, manufacturerId: string): Promise<string> => {
-  const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+  // Always crop to square first
+  const croppedBlob = await cropToSquare(file);
+  
+  const ext = 'jpg'; // We convert to jpeg in cropToSquare
   const fileName = `${manufacturerId}/${Date.now()}.${ext}`;
 
   const { error } = await supabase.storage
     .from('product-images')
-    .upload(fileName, file, { upsert: true, contentType: file.type });
+    .upload(fileName, croppedBlob, { 
+      upsert: true, 
+      contentType: 'image/jpeg' 
+    });
 
-  if (error) throw error;
+  if (error) {
+    console.error('Upload error:', error);
+    throw error;
+  }
 
   const { data } = supabase.storage
     .from('product-images')

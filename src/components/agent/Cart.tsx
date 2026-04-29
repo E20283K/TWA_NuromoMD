@@ -54,12 +54,19 @@ export const Cart: React.FC = () => {
     }
 
     try {
+      const manufacturerId = user?.manufacturer_id || items[0]?.manufacturer_id;
+      
+      if (!manufacturerId) {
+        tg.showAlert('Error: Manufacturer ID not found. Please contact support.');
+        return;
+      }
+
       setIsSubmitting(true);
       haptic.impact('medium');
 
       const orderData = {
         agent_id: user?.id,
-        manufacturer_id: user?.manufacturer_id || items[0].manufacturer_id,
+        manufacturer_id: manufacturerId,
         delivery_address: address,
         customer_name: customerName,
         customer_phone: customerPhone,
@@ -73,7 +80,6 @@ export const Cart: React.FC = () => {
         product_name: item.name,
         unit_price: item.price,
         quantity: item.quantity,
-        subtotal: item.price * item.quantity,
       }));
 
       await createOrder({ order: orderData, items: orderItems });

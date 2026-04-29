@@ -17,6 +17,7 @@ import { Dashboard as ManufacturerDashboard } from './components/manufacturer/Da
 import { OrderList as ManufacturerOrderList } from './components/manufacturer/OrderList';
 import { ProductManager } from './components/manufacturer/ProductManager';
 import { AgentManager } from './components/manufacturer/AgentManager';
+import { ManufacturerProductDetails } from './components/manufacturer/ProductDetails';
 
 // Shared
 import { BottomNav } from './components/shared/BottomNav';
@@ -101,6 +102,7 @@ const AppContent: React.FC = () => {
             <Route path="/orders" element={<ManufacturerOrderList />} />
             <Route path="/order/:id" element={<OrderDetailsPage />} />
             <Route path="/products" element={<ProductManager />} />
+            <Route path="/product/:id" element={<ManufacturerProductDetails />} />
             <Route path="/agents" element={<AgentManager />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </>

@@ -23,11 +23,16 @@ export const useProducts = (manufacturerId?: string) => {
 
   const addProductMutation = useMutation({
     mutationFn: async (newProduct: Partial<Product>) => {
+      console.log('Inserting product:', newProduct);
       const { data, error } = await (supabase.from('products') as any)
         .insert(newProduct)
         .select()
         .single();
-      if (error) throw error;
+      
+      if (error) {
+        console.error('Insert product error:', error);
+        throw error;
+      }
       return data as Product;
     },
     onSuccess: () => {
@@ -37,13 +42,31 @@ export const useProducts = (manufacturerId?: string) => {
 
   const updateProductMutation = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Product> & { id: string }) => {
+      console.log('Updating product:', id, updates);
       const { data, error } = await (supabase.from('products') as any)
         .update(updates)
         .eq('id', id)
         .select()
         .single();
-      if (error) throw error;
+      
+      if (error) {
+        console.error('Update product error:', error);
+        throw error;
+      }
       return data as Product;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+  });
+
+  const deleteProductMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
@@ -56,5 +79,6 @@ export const useProducts = (manufacturerId?: string) => {
     error: productsQuery.error,
     addProduct: addProductMutation.mutateAsync,
     updateProduct: updateProductMutation.mutateAsync,
+    deleteProduct: deleteProductMutation.mutateAsync,
   };
 };

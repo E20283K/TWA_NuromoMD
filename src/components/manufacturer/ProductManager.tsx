@@ -3,14 +3,16 @@ import { useAuthStore } from '../../store/authStore';
 import { useProducts } from '../../hooks/useProducts';
 import { ProductCard } from '../shared/ProductCard';
 import { PageHeader } from '../shared/PageHeader';
-import { Plus, X, Search, Image as ImageIcon, Loader2, Camera } from 'lucide-react';
+import { Plus, X, Search, Image as ImageIcon, Loader2, Camera, Trash2 } from 'lucide-react';
 import { tg, haptic } from '../../lib/telegram';
 import { uploadProductImage, openImagePicker } from '../../lib/storage';
+import { useNavigate } from 'react-router-dom';
 import type { Product } from '../../types';
 
 export const ProductManager: React.FC = () => {
   const { user } = useAuthStore();
-  const { products, addProduct, updateProduct } = useProducts(user?.id);
+  const navigate = useNavigate();
+  const { products, addProduct, deleteProduct } = useProducts(user?.id);
   const [search, setSearch] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,6 +48,20 @@ export const ProductManager: React.FC = () => {
     } catch (e: any) {
       tg.showAlert(`Could not select image: ${e.message}`);
     }
+  };
+
+  const handleDelete = (id: string, name: string) => {
+    haptic.impact('heavy');
+    tg.showConfirm(`Are you sure you want to delete "${name}"?`, async (ok) => {
+      if (ok) {
+        try {
+          await deleteProduct(id);
+          haptic.notification('success');
+        } catch (error: any) {
+          tg.showAlert(`Error deleting product: ${error.message}`);
+        }
+      }
+    });
   };
 
   const handleSaveProduct = async () => {
@@ -117,13 +133,18 @@ export const ProductManager: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           {filteredProducts.map((product) => (
             <div key={product.id} className="relative group">
-              <ProductCard product={product} mode="manager" />
-              <div className="absolute top-2 right-2 flex gap-1">
+              <div onClick={() => navigate(`/product/${product.id}`)} className="cursor-pointer">
+                <ProductCard product={product} mode="manager" />
+              </div>
+              <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button
-                  onClick={() => updateProduct({ id: product.id, is_active: !product.is_active })}
-                  className="bg-black/50 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-lg"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(product.id, product.name);
+                  }}
+                  className="bg-red-500 text-white p-1.5 rounded-lg shadow-sm active:scale-90 transition-transform"
                 >
-                  {product.is_active ? 'Archive' : 'Activate'}
+                  <Trash2 size={14} />
                 </button>
               </div>
             </div>
