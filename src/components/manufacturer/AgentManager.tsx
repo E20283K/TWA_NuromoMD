@@ -46,9 +46,17 @@ export const AgentManager: React.FC = () => {
 
   const handleCopyInvite = () => {
     haptic.impact('light');
-    const inviteLink = `https://t.me/YourBotName?start=invite_${user?.id}`;
-    navigator.clipboard.writeText(inviteLink);
-    tg.showAlert('Invite link copied to clipboard! Send it to your agents.');
+    const botUsername = import.meta.env.VITE_BOT_USERNAME?.replace('@', '') || 'YourBotName';
+    const inviteLink = `https://t.me/${botUsername}?start=invite_${user?.id}`;
+    
+    // Attempt to copy to clipboard
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(inviteLink)
+        .then(() => tg.showAlert('Invite link copied to clipboard! Send it to your agents.'))
+        .catch(() => tg.showAlert(`Invite link: ${inviteLink}`));
+    } else {
+      tg.showAlert(`Invite link: ${inviteLink}`);
+    }
   };
 
   return (
