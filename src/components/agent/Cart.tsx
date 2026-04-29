@@ -202,6 +202,21 @@ export const Cart: React.FC = () => {
           <span className="text-xl font-black text-tg-button">${getTotal().toFixed(2)}</span>
         </div>
       </section>
+
+      {/* On-screen floating submit button (Fallback for Telegram Native Button) */}
+      <div className="fixed bottom-6 left-4 right-4 z-50">
+        <button 
+          onClick={handleSubmit}
+          disabled={isSubmitting || !address.trim()}
+          className="w-full bg-tg-button text-tg-button-text py-4 rounded-xl font-black shadow-2xl flex items-center justify-center gap-2 active:scale-95 transition-transform disabled:opacity-50"
+        >
+          {isSubmitting ? (
+            <span className="animate-pulse">Submitting...</span>
+          ) : (
+            `Submit Order • $${getTotal().toFixed(2)}`
+          )}
+        </button>
+      </div>
     </div>
   );
 };
