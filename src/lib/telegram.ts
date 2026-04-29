@@ -35,20 +35,44 @@ export const haptic = {
 };
 
 export const showMainButton = (text: string, onClick: () => void) => {
-  tg.MainButton.setText(text);
-  tg.MainButton.onClick(onClick);
-  tg.MainButton.show();
+  if (tg && tg.MainButton) {
+    try {
+      tg.MainButton.setText(text);
+      tg.MainButton.onClick(onClick);
+      tg.MainButton.show();
+    } catch (e) {
+      console.error('Error showing MainButton', e);
+    }
+  }
 };
 
 export const hideMainButton = () => {
-  tg.MainButton.hide();
+  if (tg && tg.MainButton) {
+    try {
+      tg.MainButton.hide();
+    } catch (e) {
+      console.error('Error hiding MainButton', e);
+    }
+  }
 };
 
 export const showBackButton = (onClick: () => void) => {
-  tg.BackButton.onClick(onClick);
-  tg.BackButton.show();
+  if (tg && tg.BackButton) {
+    try {
+      tg.BackButton.onClick(onClick);
+      tg.BackButton.show();
+    } catch (e) {
+      console.error('Error showing BackButton', e);
+    }
+  }
 };
 
 export const hideBackButton = () => {
-  tg.BackButton.hide();
+  if (tg && tg.BackButton) {
+    try {
+      tg.BackButton.hide();
+    } catch (e) {
+      console.error('Error hiding BackButton', e);
+    }
+  }
 };

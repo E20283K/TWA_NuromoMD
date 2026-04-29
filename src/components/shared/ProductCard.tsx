@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Product } from '../../types';
 import { useCartStore } from '../../store/cartStore';
 import { Plus, Minus, ShoppingCart } from 'lucide-react';
@@ -14,8 +15,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, mode }) => {
   const cartItem = items.find((item) => item.id === product.id);
   const quantity = cartItem?.quantity || 0;
 
+  const navigate = useNavigate();
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Prevent navigation if clicking inside the add/remove buttons
+    if ((e.target as HTMLElement).closest('button')) return;
+    if (mode === 'catalog') {
+      navigate(`/product/${product.id}`);
+    }
+  };
+
   return (
-    <div className="bg-tg-bg border border-tg-hint/20 rounded-xl overflow-hidden shadow-sm flex flex-col">
+    <div 
+      className="bg-tg-bg border border-tg-hint/20 rounded-xl overflow-hidden shadow-sm flex flex-col cursor-pointer active:scale-[0.98] transition-transform"
+      onClick={handleCardClick}
+    >
       <div className="aspect-square bg-tg-secondary-bg flex items-center justify-center relative">
         {product.image_url ? (
           <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
@@ -25,7 +39,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, mode }) => {
           </span>
         )}
         {quantity > 0 && mode === 'catalog' && (
-          <div className="absolute top-2 right-2 bg-tg-button text-tg-button-text w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">
+          <div className="absolute top-2 right-2 bg-tg-button text-tg-button-text w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shadow-sm">
             {quantity}
           </div>
         )}
@@ -36,7 +50,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, mode }) => {
           <h3 className="font-bold text-sm line-clamp-1">{product.name}</h3>
           <span className="text-tg-button font-bold text-sm">${product.price}</span>
         </div>
-        <p className="text-tg-hint text-xs mb-3 flex-1 line-clamp-2">{product.description || `Per ${product.unit}`}</p>
+        <p className="text-tg-hint text-[11px] mb-3 flex-1 line-clamp-2">{product.description || `Per ${product.unit}`}</p>
         
         {mode === 'catalog' ? (
           <div className="flex items-center justify-between mt-auto">

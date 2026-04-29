@@ -121,34 +121,69 @@ export const AgentManager: React.FC = () => {
         />
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-6">
         {isLoading ? (
           [1, 2, 3].map(i => <div key={i} className="h-16 bg-tg-secondary-bg rounded-xl animate-pulse"></div>)
         ) : (
-          filteredAgents.map((agent) => (
-            <div key={agent.id} className="bg-tg-secondary-bg p-3 rounded-xl border border-tg-hint/5 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-tg-bg rounded-full flex items-center justify-center text-lg">
-                  {agent.is_active ? '👤' : '💤'}
-                </div>
-                <div>
-                  <h3 className={clsx('font-bold text-sm', !agent.is_active && 'text-tg-hint')}>
-                    {agent.full_name}
-                  </h3>
-                  <p className="text-[10px] text-tg-hint">@{agent.telegram_username || 'no_username'}</p>
-                </div>
+          <>
+            {filteredAgents.some(a => !a.is_active) && (
+              <div className="space-y-2">
+                <h2 className="text-sm font-bold text-tg-hint uppercase tracking-wider mb-3">Pending Approvals</h2>
+                {filteredAgents.filter(a => !a.is_active).map((agent) => (
+                  <div key={agent.id} className="bg-yellow-500/10 p-3 rounded-xl border border-yellow-500/20 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-yellow-500/20 text-yellow-600 rounded-full flex items-center justify-center text-lg">
+                        ⏳
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-sm text-yellow-600">
+                          {agent.full_name}
+                        </h3>
+                        <p className="text-[10px] text-yellow-600/70">@{agent.telegram_username || 'no_username'}</p>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => toggleAgentStatus.mutate({ agentId: agent.id, isActive: true })}
+                      className="p-2 rounded-lg bg-green-500/10 text-green-500 active:scale-95 transition-transform"
+                    >
+                      <UserCheck size={18} />
+                    </button>
+                  </div>
+                ))}
               </div>
-              <button 
-                onClick={() => toggleAgentStatus.mutate({ agentId: agent.id, isActive: !agent.is_active })}
-                className={clsx(
-                  'p-2 rounded-lg transition-colors',
-                  agent.is_active ? 'bg-red-500/10 text-red-500' : 'bg-green-500/10 text-green-500'
-                )}
-              >
-                {agent.is_active ? <UserX size={18} /> : <UserCheck size={18} />}
-              </button>
+            )}
+
+            <div className="space-y-2">
+              <h2 className="text-sm font-bold text-tg-hint uppercase tracking-wider mb-3">Active Agents</h2>
+              {filteredAgents.filter(a => a.is_active).length === 0 ? (
+                <div className="text-center py-6 bg-tg-secondary-bg rounded-xl border border-dashed border-tg-hint/20">
+                  <p className="text-tg-hint text-sm italic">No active agents</p>
+                </div>
+              ) : (
+                filteredAgents.filter(a => a.is_active).map((agent) => (
+                  <div key={agent.id} className="bg-tg-secondary-bg p-3 rounded-xl border border-tg-hint/5 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-tg-bg rounded-full flex items-center justify-center text-lg">
+                        👤
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-sm">
+                          {agent.full_name}
+                        </h3>
+                        <p className="text-[10px] text-tg-hint">@{agent.telegram_username || 'no_username'}</p>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => toggleAgentStatus.mutate({ agentId: agent.id, isActive: false })}
+                      className="p-2 rounded-lg bg-red-500/10 text-red-500 active:scale-95 transition-transform"
+                    >
+                      <UserX size={18} />
+                    </button>
+                  </div>
+                ))
+              )}
             </div>
-          ))
+          </>
         )}
         {filteredAgents.length === 0 && !isLoading && (
           <div className="text-center py-12">

@@ -7,6 +7,7 @@ import { initTWA } from './lib/telegram';
 // Components - Agent
 import { AgentHome } from './components/agent/AgentHome';
 import { ProductCatalog } from './components/agent/ProductCatalog';
+import { ProductDetails } from './components/agent/ProductDetails';
 import { OrderHistory as AgentOrderHistory } from './components/agent/OrderHistory';
 import { Cart } from './components/agent/Cart';
 
@@ -85,6 +86,7 @@ const AppContent: React.FC = () => {
           <>
             <Route path="/" element={<AgentHome />} />
             <Route path="/catalog" element={<ProductCatalog />} />
+            <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/history" element={<AgentOrderHistory />} />
             <Route path="*" element={<Navigate to="/" replace />} />
