@@ -27,13 +27,9 @@ export const useAuthStore = create<AuthState>((set) => ({
       
       const initData = tg.initData;
       if (!initData) {
-        throw new Error('Telegram initData not found');
+        throw new Error('Telegram initData not found. Please open this app in Telegram.');
       }
 
-      // In a real app, we would call an Edge Function to validate initData and get a Supabase JWT
-      // For now, we'll try to find the user in the database or sign in if they exist
-      // This is a simplification. The production way is using the Edge Function.
-      
       const telegramId = tg.initDataUnsafe.user?.id;
       if (!telegramId) throw new Error('Could not get Telegram ID');
 

@@ -3,8 +3,9 @@ import WebApp from '@twa-dev/sdk';
 export const tg = WebApp;
 
 export const initTWA = () => {
-  tg.ready();
-  tg.expand();
+  // Only call SDK methods if they exist (prevents crash in regular browsers)
+  if (typeof tg.ready === 'function') tg.ready();
+  if (typeof tg.expand === 'function') tg.expand();
   
   // Apply theme colors to body with safety check
   if (tg.themeParams && tg.themeParams.bg_color) {
