@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.css'
 
-const tg = window.Telegram?.WebApp;
+const tg = (window as any).Telegram?.WebApp;
 
 if (tg) {
   tg.ready();
