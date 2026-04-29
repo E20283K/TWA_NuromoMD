@@ -15,7 +15,7 @@ export const useOrders = (role: 'manufacturer' | 'agent', userId?: string) => {
         .from('orders')
         .select(`
           *,
-          agent:users!orders_agent_id_fkey(*),
+          agent:users!orders_agent_id_fkey(id, full_name, telegram_username),
           items:order_items(*)
         `);
 
@@ -37,7 +37,7 @@ export const useOrders = (role: 'manufacturer' | 'agent', userId?: string) => {
     if (!userId) return;
 
     const channel = supabase
-      .channel('orders-changes')
+      .channel(`orders-changes-${userId}`)
       .on(
         'postgres_changes',
         {
@@ -81,7 +81,7 @@ export const useOrders = (role: 'manufacturer' | 'agent', userId?: string) => {
 
       if (orderError) throw orderError;
 
-      // 2. Create order items
+      // Create order items
       const itemsWithOrderId = items.map(item => ({
         ...item,
         order_id: (newOrder as any).id
@@ -105,4 +105,29 @@ export const useOrders = (role: 'manufacturer' | 'agent', userId?: string) => {
     updateStatus: updateStatusMutation.mutateAsync,
     createOrder: createOrderMutation.mutateAsync,
   };
+};
+
+// Hook to fetch a single order with all its items by ID
+export const useOrderById = (orderId?: string) => {
+  return useQuery({
+    queryKey: ['order', orderId],
+    queryFn: async () => {
+      if (!orderId) return null;
+
+      const { data, error } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          agent:users!orders_agent_id_fkey(id, full_name, telegram_username, phone),
+          items:order_items(*)
+        `)
+        .eq('id', orderId)
+        .single();
+
+      if (error) throw error;
+      return data as Order;
+    },
+    enabled: !!orderId,
+    staleTime: 30_000,
+  });
 };

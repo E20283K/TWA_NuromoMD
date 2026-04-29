@@ -7,7 +7,7 @@ import { haptic, tg } from '../../lib/telegram';
 
 export const ClientManager: React.FC = () => {
   const { user } = useAuthStore();
-  const { clients, isLoading, addClient, deleteClient } = useClients(user?.id);
+  const { clients, isLoading, fetchError, addClient, deleteClient } = useClients(user?.id);
   const [isAdding, setIsAdding] = useState(false);
 
   const [name, setName] = useState('');
@@ -99,7 +99,15 @@ export const ClientManager: React.FC = () => {
           </div>
         )}
 
-        {!isLoading && clients.length === 0 && (
+        {!isLoading && fetchError && (
+          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-sm">
+            <p className="font-bold text-red-500 mb-1">Database Error</p>
+            <p className="text-red-600">{fetchError.message}</p>
+            <p className="text-tg-hint text-xs mt-2">The `clients` table may not exist yet. Run migration 003_clients.sql in Supabase SQL Editor.</p>
+          </div>
+        )}
+
+        {!isLoading && clients.length === 0 && !fetchError && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="w-20 h-20 bg-tg-secondary-bg rounded-full flex items-center justify-center mb-4">
               <User size={36} className="text-tg-hint opacity-40" />
