@@ -1,5 +1,5 @@
 import React from 'react';
-import { Product } from '../../types';
+import type { Product } from '../../types';
 import { useCartStore } from '../../store/cartStore';
 import { Plus, Minus, ShoppingCart } from 'lucide-react';
 import { clsx } from 'clsx';

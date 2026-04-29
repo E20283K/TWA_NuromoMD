@@ -3,7 +3,7 @@ import { useCartStore } from '../../store/cartStore';
 import { useAuthStore } from '../../store/authStore';
 import { useOrders } from '../../hooks/useOrders';
 import { useNavigate } from 'react-router-dom';
-import { Trash2, MapPin, Plus, Minus, User, Phone, FileText } from 'lucide-react';
+import { Trash2, MapPin, Plus, Minus, User, Phone, FileText, ShoppingCart } from 'lucide-react';
 import { showMainButton, hideMainButton, showBackButton, hideBackButton, haptic, tg } from '../../lib/telegram';
 
 export const Cart: React.FC = () => {
@@ -34,7 +34,7 @@ export const Cart: React.FC = () => {
   }, [items, getTotal, navigate]);
 
   const handleSubmit = async () => {
-    if (items.length === 0) return;
+    if (items.length === 0 || isSubmitting) return;
     if (!address) {
       tg.showAlert('Please provide a delivery address');
       return;
@@ -82,7 +82,7 @@ export const Cart: React.FC = () => {
     haptic.impact('light');
     tg.LocationManager.init(() => {
       tg.LocationManager.getLocation((data) => {
-        if (data.latitude && data.longitude) {
+        if (data && data.latitude && data.longitude) {
           // In a real app, you'd reverse geocode this. For now, we'll just note it.
           setAddress(`GPS: ${data.latitude.toFixed(6)}, ${data.longitude.toFixed(6)}`);
         }

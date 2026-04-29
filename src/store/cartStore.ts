@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Product, CartItem } from '../types';
+import type { Product, CartItem } from '../types';
 import { haptic } from '../lib/telegram';
 
 interface CartState {

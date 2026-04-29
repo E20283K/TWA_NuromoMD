@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
-import { Order, OrderItem, OrderStatus } from '../types';
+import type { Order, OrderItem, OrderStatus } from '../types';
 import { useEffect } from 'react';
 
 export const useOrders = (role: 'manufacturer' | 'agent', userId?: string) => {
@@ -61,7 +61,7 @@ export const useOrders = (role: 'manufacturer' | 'agent', userId?: string) => {
     mutationFn: async ({ orderId, status, rejectedReason }: { orderId: string, status: OrderStatus, rejectedReason?: string }) => {
       const { data, error } = await supabase
         .from('orders')
-        .update({ status, rejected_reason: rejectedReason, updated_at: new Date().toISOString() })
+        .update({ status, rejected_reason: rejectedReason, updated_at: new Date().toISOString() } as any)
         .eq('id', orderId)
         .select()
         .single();
@@ -78,7 +78,7 @@ export const useOrders = (role: 'manufacturer' | 'agent', userId?: string) => {
       // 1. Create order
       const { data: newOrder, error: orderError } = await supabase
         .from('orders')
-        .insert(order)
+        .insert(order as any)
         .select()
         .single();
 
@@ -92,7 +92,7 @@ export const useOrders = (role: 'manufacturer' | 'agent', userId?: string) => {
 
       const { error: itemsError } = await supabase
         .from('order_items')
-        .insert(itemsWithOrderId);
+        .insert(itemsWithOrderId as any);
 
       if (itemsError) throw itemsError;
 

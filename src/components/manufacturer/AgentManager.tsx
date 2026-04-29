@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { supabase } from '../../lib/supabase';
-import { User } from '../../types';
+import type { User } from '../../types';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { UserPlus, UserX, UserCheck, Search, Link as LinkIcon } from 'lucide-react';
 import { tg, haptic } from '../../lib/telegram';
+import { clsx } from 'clsx';
 
 export const AgentManager: React.FC = () => {
   const { user } = useAuthStore();
@@ -18,7 +19,7 @@ export const AgentManager: React.FC = () => {
         .from('users')
         .select('*')
         .eq('role', 'agent')
-        .eq('manufacturer_id', user?.id);
+        .eq('manufacturer_id', user?.id || '');
       if (error) throw error;
       return data as User[];
     },
@@ -29,7 +30,7 @@ export const AgentManager: React.FC = () => {
     mutationFn: async ({ agentId, isActive }: { agentId: string, isActive: boolean }) => {
       const { error } = await supabase
         .from('users')
-        .update({ is_active: isActive })
+        .update({ is_active: isActive } as any)
         .eq('id', agentId);
       if (error) throw error;
     },

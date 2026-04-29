@@ -4,11 +4,11 @@ import { useProducts } from '../../hooks/useProducts';
 import { ProductCard } from '../shared/ProductCard';
 import { Plus, X, Search, Image as ImageIcon } from 'lucide-react';
 import { tg, haptic } from '../../lib/telegram';
-import { Product } from '../../types';
+import type { Product } from '../../types';
 
 export const ProductManager: React.FC = () => {
   const { user } = useAuthStore();
-  const { products, addProduct, updateProduct, isLoading } = useProducts(user?.id);
+  const { products, addProduct, updateProduct } = useProducts(user?.id);
   const [search, setSearch] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   

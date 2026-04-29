@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useOrders } from '../../hooks/useOrders';
 import { StatusBadge } from '../shared/StatusBadge';
-import { Order, OrderStatus } from '../../types';
-import { Search, Filter, X, ChevronRight, Check, XCircle, Truck } from 'lucide-react';
-import { clsx } from 'clsx';
+import type { Order, OrderStatus } from '../../types';
+import { Search, X, Check, XCircle, Truck } from 'lucide-react';
 import { haptic, tg } from '../../lib/telegram';
 
 export const OrderList: React.FC = () => {

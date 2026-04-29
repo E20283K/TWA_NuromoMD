@@ -3,7 +3,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useOrders } from '../../hooks/useOrders';
 import { StatusBadge } from '../shared/StatusBadge';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingPlus, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 export const AgentHome: React.FC = () => {
   const { user } = useAuthStore();

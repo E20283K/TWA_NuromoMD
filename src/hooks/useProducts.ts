@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
-import { Product } from '../types';
+import type { Product } from '../types';
 
 export const useProducts = (manufacturerId?: string) => {
   const queryClient = useQueryClient();
@@ -25,7 +25,7 @@ export const useProducts = (manufacturerId?: string) => {
     mutationFn: async (newProduct: Partial<Product>) => {
       const { data, error } = await supabase
         .from('products')
-        .insert(newProduct)
+        .insert(newProduct as any)
         .select()
         .single();
       if (error) throw error;
@@ -40,7 +40,7 @@ export const useProducts = (manufacturerId?: string) => {
     mutationFn: async ({ id, ...updates }: Partial<Product> & { id: string }) => {
       const { data, error } = await supabase
         .from('products')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id)
         .select()
         .single();

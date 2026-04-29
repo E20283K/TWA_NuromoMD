@@ -13,7 +13,7 @@ export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
 
   const today = new Date().toISOString().split('T')[0];
-  const todayOrders = orders.filter(o => o.created_at.startsWith(today));
+  // const todayOrders = orders.filter(o => o.created_at.startsWith(today));
   const pendingOrders = orders.filter(o => o.status === 'pending');
   const totalRevenue = orders.reduce((sum, o) => sum + Number(o.total_amount), 0);
   

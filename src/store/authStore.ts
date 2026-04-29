@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { User } from '../types';
+import type { User } from '../types';
 import { supabase } from '../lib/supabase';
 import { tg } from '../lib/telegram';
 
@@ -61,7 +61,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             telegram_username: tg.initDataUnsafe.user?.username || null,
             full_name: `${tg.initDataUnsafe.user?.first_name || ''} ${tg.initDataUnsafe.user?.last_name || ''}`.trim(),
             role,
-          })
+          } as any)
           .select()
           .single();
 

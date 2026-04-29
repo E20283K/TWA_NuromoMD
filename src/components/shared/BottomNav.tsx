@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Home, ClipboardList, Package, Users, BarChart3, ShoppingBag } from 'lucide-react';
-import { UserRole } from '../../types';
+import type { UserRole } from '../../types';
 import { clsx } from 'clsx';
 
 interface BottomNavProps {

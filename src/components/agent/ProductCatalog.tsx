@@ -3,7 +3,7 @@ import { useProducts } from '../../hooks/useProducts';
 import { useAuthStore } from '../../store/authStore';
 import { useCartStore } from '../../store/cartStore';
 import { ProductCard } from '../shared/ProductCard';
-import { Search, ShoppingCart, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useNavigate } from 'react-router-dom';
 import { showMainButton, hideMainButton } from '../../lib/telegram';
