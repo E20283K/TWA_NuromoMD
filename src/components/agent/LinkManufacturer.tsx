@@ -21,8 +21,8 @@ export const LinkManufacturer: React.FC = () => {
       }
 
       // First try to find by UUID directly
-      let { data: manufacturer } = await supabase
-        .from('users')
+      let { data: manufacturer } = await (supabase
+        .from('users') as any)
         .select('id')
         .eq('id', mId)
         .eq('role', 'manufacturer')
@@ -30,8 +30,8 @@ export const LinkManufacturer: React.FC = () => {
 
       // If not found, try to find by telegram_id (in case we use shorter numbers later)
       if (!manufacturer && !isNaN(Number(mId))) {
-        const { data: m2 } = await supabase
-          .from('users')
+        const { data: m2 } = await (supabase
+          .from('users') as any)
           .select('id')
           .eq('telegram_id', Number(mId))
           .eq('role', 'manufacturer')
