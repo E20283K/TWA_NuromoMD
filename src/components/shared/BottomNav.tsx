@@ -13,6 +13,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ role }) => {
     { to: '/', icon: Home, label: 'Home' },
     { to: '/catalog', icon: ShoppingBag, label: 'Catalog' },
     { to: '/history', icon: ClipboardList, label: 'Orders' },
+    { to: '/clients', icon: Users, label: 'Clients' },
   ];
 
   const manufacturerLinks = [

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useCartStore } from '../../store/cartStore';
 import { useAuthStore } from '../../store/authStore';
 import { useOrders } from '../../hooks/useOrders';
+import { useClients } from '../../hooks/useClients';
 import { useNavigate } from 'react-router-dom';
 import { Trash2, MapPin, Plus, Minus, User, Phone, FileText, ShoppingCart, ArrowLeft } from 'lucide-react';
 import { showMainButton, hideMainButton, showBackButton, hideBackButton, haptic, tg } from '../../lib/telegram';
@@ -9,7 +10,8 @@ import { showMainButton, hideMainButton, showBackButton, hideBackButton, haptic,
 export const Cart: React.FC = () => {
   const { items, updateQuantity, removeItem, getTotal, clearCart } = useCartStore();
   const { user } = useAuthStore();
-  const { createOrder, orders } = useOrders('agent', user?.id);
+  const { createOrder } = useOrders('agent', user?.id);
+  const { clients } = useClients(user?.id);
   const navigate = useNavigate();
 
   const [address, setAddress] = useState('');
@@ -18,15 +20,6 @@ export const Cart: React.FC = () => {
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  
-  const recentClients = Array.from(new Set(orders.map(o => JSON.stringify({ 
-    name: o.customer_name, 
-    phone: o.customer_phone, 
-    address: o.delivery_address 
-  }))))
-    .map(s => JSON.parse(s))
-    .filter(c => c.name && c.phone)
-    .slice(0, 5);
 
   useEffect(() => {
     showBackButton(() => navigate(-1));
@@ -77,6 +70,10 @@ export const Cart: React.FC = () => {
       
       haptic.notification('success');
       clearCart();
+      setAddress('');
+      setCustomerName('');
+      setCustomerPhone('');
+      setNotes('');
       setShowSuccess(true);
     } catch (error: any) {
       console.error(error);
@@ -188,11 +185,11 @@ export const Cart: React.FC = () => {
       <section className="space-y-4">
         <div className="flex justify-between items-center">
           <h2 className="font-bold text-sm uppercase tracking-wider text-tg-hint">Delivery Details</h2>
-          {recentClients.length > 0 && (
+          {clients.length > 0 && (
             <div className="flex gap-2 overflow-x-auto no-scrollbar max-w-[200px]">
-              {recentClients.map((client, idx) => (
+              {clients.map((client) => (
                 <button 
-                  key={idx}
+                  key={client.id}
                   onClick={() => selectClient(client)}
                   className="bg-tg-button/10 text-tg-button text-[10px] px-2 py-1 rounded-md whitespace-nowrap font-bold"
                 >

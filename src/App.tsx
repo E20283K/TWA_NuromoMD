@@ -10,6 +10,7 @@ import { ProductCatalog } from './components/agent/ProductCatalog';
 import { ProductDetails } from './components/agent/ProductDetails';
 import { OrderHistory as AgentOrderHistory } from './components/agent/OrderHistory';
 import { Cart } from './components/agent/Cart';
+import { ClientManager } from './components/agent/ClientManager';
 
 // Components - Manufacturer
 import { Dashboard as ManufacturerDashboard } from './components/manufacturer/Dashboard';
@@ -23,6 +24,7 @@ import { LoadingScreen } from './components/shared/LoadingScreen';
 
 import { BackButtonManager } from './components/shared/BackButtonManager';
 import { LinkManufacturer } from './components/agent/LinkManufacturer';
+import { OrderDetailsPage } from './components/shared/OrderDetailsPage';
 
 const queryClient = new QueryClient();
 
@@ -89,12 +91,15 @@ const AppContent: React.FC = () => {
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/history" element={<AgentOrderHistory />} />
+            <Route path="/clients" element={<ClientManager />} />
+            <Route path="/order/:id" element={<OrderDetailsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
         ) : (
           <>
             <Route path="/" element={<ManufacturerDashboard />} />
             <Route path="/orders" element={<ManufacturerOrderList />} />
+            <Route path="/order/:id" element={<OrderDetailsPage />} />
             <Route path="/products" element={<ProductManager />} />
             <Route path="/agents" element={<AgentManager />} />
             <Route path="*" element={<Navigate to="/" replace />} />

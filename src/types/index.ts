@@ -65,3 +65,22 @@ export interface OrderItem {
 export interface CartItem extends Product {
   quantity: number;
 }
+
+export interface Notification {
+  id: string;
+  recipient_id: string;
+  message: string;
+  sent_at: string;
+  status: 'sent' | 'read';
+}
+
+export interface Client {
+  id: string;
+  agent_id: string;
+  name: string;
+  phone: string;
+  address: string;
+  location_lat?: number;
+  location_lng?: number;
+  created_at: string;
+}

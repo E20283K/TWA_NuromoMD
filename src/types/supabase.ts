@@ -176,6 +176,41 @@ export interface Database {
           item_notes?: string | null
         }
       }
+      clients: {
+        Row: {
+          id: string
+          agent_id: string
+          name: string
+          phone: string | null
+          address: string | null
+          location_lat: number | null
+          location_lng: number | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          agent_id: string
+          name: string
+          phone?: string | null
+          address?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          agent_id?: string
+          name?: string
+          phone?: string | null
+          address?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
   }
 }
