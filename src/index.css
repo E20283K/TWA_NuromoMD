@@ -15,10 +15,14 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Telegram Safe Areas */
+  --safe-area-top: var(--tg-safe-area-inset-top, 0px);
 }
 
 body {
   margin: 0;
+  padding-top: var(--safe-area-top);
   min-width: 320px;
   min-height: 100vh;
   background-color: var(--tg-theme-bg-color, #ffffff);
