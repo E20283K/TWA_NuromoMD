@@ -110,7 +110,7 @@ ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
 
 -- Users: everyone can see themselves
 CREATE POLICY user_read_own ON users
-  FOR SELECT USING (id = auth.uid() OR telegram_id::text = auth.uid());
+  FOR SELECT USING (id = auth.uid());
 
 -- Products: active products visible to agents of same manufacturer, all visible to manufacturer
 CREATE POLICY products_read ON products
