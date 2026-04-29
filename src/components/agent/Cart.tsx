@@ -3,7 +3,7 @@ import { useCartStore } from '../../store/cartStore';
 import { useAuthStore } from '../../store/authStore';
 import { useOrders } from '../../hooks/useOrders';
 import { useNavigate } from 'react-router-dom';
-import { Trash2, MapPin, Plus, Minus, User, Phone, FileText, ShoppingCart } from 'lucide-react';
+import { Trash2, MapPin, Plus, Minus, User, Phone, FileText, ShoppingCart, ArrowLeft } from 'lucide-react';
 import { showMainButton, hideMainButton, showBackButton, hideBackButton, haptic, tg } from '../../lib/telegram';
 
 export const Cart: React.FC = () => {
@@ -17,11 +17,12 @@ export const Cart: React.FC = () => {
   const [customerPhone, setCustomerPhone] = useState('');
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     showBackButton(() => navigate(-1));
     
-    if (items.length > 0) {
+    if (items.length > 0 && !showSuccess) {
       showMainButton(`Submit Order • $${getTotal().toFixed(2)}`, handleSubmit);
     } else {
       hideMainButton();
@@ -31,7 +32,7 @@ export const Cart: React.FC = () => {
       hideBackButton();
       hideMainButton();
     };
-  }, [items, getTotal, navigate]);
+  }, [items, getTotal, navigate, showSuccess]);
 
   const handleSubmit = async () => {
     if (items.length === 0 || isSubmitting) return;
@@ -67,9 +68,7 @@ export const Cart: React.FC = () => {
       
       haptic.notification('success');
       clearCart();
-      tg.showAlert('Order submitted successfully!', () => {
-        navigate('/history');
-      });
+      setShowSuccess(true);
     } catch (error: any) {
       console.error(error);
       tg.showAlert(`Error: ${error.message}`);
@@ -83,12 +82,82 @@ export const Cart: React.FC = () => {
     tg.LocationManager.init(() => {
       tg.LocationManager.getLocation((data) => {
         if (data && data.latitude && data.longitude) {
-          // In a real app, you'd reverse geocode this. For now, we'll just note it.
           setAddress(`GPS: ${data.latitude.toFixed(6)}, ${data.longitude.toFixed(6)}`);
         }
       });
     });
   };
+
+  if (showSuccess) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[80vh] p-6 text-center animate-in fade-in zoom-in duration-500">
+        <div className="w-24 h-24 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mb-6 text-5xl">
+          ✅
+        </div>
+        <h2 className="text-2xl font-black mb-2">Order Submitted!</h2>
+        <p className="text-tg-hint mb-8 max-w-xs">Your order has been sent to the manufacturer for approval.</p>
+        <div className="flex flex-col gap-3 w-full">
+          <button 
+            onClick={() => navigate('/history')}
+            className="w-full bg-tg-button text-tg-button-text py-4 rounded-2xl font-bold shadow-lg"
+          >
+            Track Order
+          </button>
+          <button 
+            onClick={() => {
+              setShowSuccess(false);
+              navigate('/catalog');
+            }}
+            className="w-full bg-tg-secondary-bg text-tg-text py-4 rounded-2xl font-bold"
+          >
+            New Order
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const { orders } = useOrders('agent', user?.id);
+  const recentClients = Array.from(new Set(orders.map(o => JSON.stringify({ name: o.customer_name, phone: o.customer_phone, address: o.delivery_address }))))
+    .map(s => JSON.parse(s))
+    .filter(c => c.name && c.phone)
+    .slice(0, 5);
+
+  const selectClient = (client: any) => {
+    setCustomerName(client.name);
+    setCustomerPhone(client.phone);
+    setAddress(client.address);
+    haptic.impact('light');
+  };
+
+  if (showSuccess) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[80vh] p-6 text-center animate-in fade-in zoom-in duration-500">
+        <div className="w-24 h-24 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mb-6 text-5xl">
+          ✅
+        </div>
+        <h2 className="text-2xl font-black mb-2">Order Submitted!</h2>
+        <p className="text-tg-hint mb-8 max-w-xs">Your order has been sent to the manufacturer for approval.</p>
+        <div className="flex flex-col gap-3 w-full">
+          <button 
+            onClick={() => navigate('/history')}
+            className="w-full bg-tg-button text-tg-button-text py-4 rounded-2xl font-bold shadow-lg"
+          >
+            Track Order
+          </button>
+          <button 
+            onClick={() => {
+              setShowSuccess(false);
+              navigate('/catalog');
+            }}
+            className="w-full bg-tg-secondary-bg text-tg-text py-4 rounded-2xl font-bold"
+          >
+            New Order
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -109,8 +178,16 @@ export const Cart: React.FC = () => {
   }
 
   return (
-    <div className="p-4 space-y-6 pb-32">
-      <h1 className="text-xl font-bold">Your Order</h1>
+    <div className="p-4 space-y-6 pb-48">
+      <header className="flex items-center gap-3">
+        <button 
+          onClick={() => navigate(-1)}
+          className="p-2 bg-tg-secondary-bg rounded-full text-tg-hint active:scale-90 transition-transform"
+        >
+          <ArrowLeft size={20} />
+        </button>
+        <h1 className="text-xl font-bold">Your Order</h1>
+      </header>
 
       <section className="space-y-3">
         {items.map((item) => (
@@ -135,7 +212,22 @@ export const Cart: React.FC = () => {
       </section>
 
       <section className="space-y-4">
-        <h2 className="font-bold text-sm uppercase tracking-wider text-tg-hint">Delivery Details</h2>
+        <div className="flex justify-between items-center">
+          <h2 className="font-bold text-sm uppercase tracking-wider text-tg-hint">Delivery Details</h2>
+          {recentClients.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto no-scrollbar max-w-[200px]">
+              {recentClients.map((client, idx) => (
+                <button 
+                  key={idx}
+                  onClick={() => selectClient(client)}
+                  className="bg-tg-button/10 text-tg-button text-[10px] px-2 py-1 rounded-md whitespace-nowrap font-bold"
+                >
+                  {client.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         
         <div className="space-y-3">
           <div className="relative">
@@ -204,7 +296,7 @@ export const Cart: React.FC = () => {
       </section>
 
       {/* On-screen floating submit button (Fallback for Telegram Native Button) */}
-      <div className="fixed bottom-6 left-4 right-4 z-50">
+      <div className="fixed bottom-24 left-4 right-4 z-50">
         <button 
           onClick={handleSubmit}
           disabled={isSubmitting || !address.trim()}

@@ -101,7 +101,7 @@ export const ProductCatalog: React.FC = () => {
 
       {/* On-screen floating cart button (Fallback for Telegram Native Button) */}
       {cartCount > 0 && (
-        <div className="fixed bottom-20 left-4 right-4 z-50">
+        <div className="fixed bottom-24 left-4 right-4 z-50">
           <button 
             onClick={() => navigate('/cart')}
             className="w-full bg-tg-button text-tg-button-text py-3.5 rounded-xl font-bold shadow-lg flex items-center justify-between px-4 active:scale-95 transition-transform"

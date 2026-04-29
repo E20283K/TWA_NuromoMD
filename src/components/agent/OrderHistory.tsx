@@ -1,11 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useOrders } from '../../hooks/useOrders';
 import { StatusBadge } from '../shared/StatusBadge';
+import { ArrowLeft } from 'lucide-react';
 
 export const OrderHistory: React.FC = () => {
   const { user } = useAuthStore();
   const { orders, isLoading } = useOrders('agent', user?.id);
+  const navigate = useNavigate();
 
   if (isLoading) {
     return <div className="p-4 animate-pulse space-y-3">
@@ -15,7 +18,15 @@ export const OrderHistory: React.FC = () => {
 
   return (
     <div className="p-4 space-y-4 pb-24">
-      <h1 className="text-xl font-bold">My Orders</h1>
+      <header className="flex items-center gap-3">
+        <button 
+          onClick={() => navigate('/')}
+          className="p-2 bg-tg-secondary-bg rounded-full text-tg-hint active:scale-90 transition-transform"
+        >
+          <ArrowLeft size={20} />
+        </button>
+        <h1 className="text-xl font-bold">My Orders</h1>
+      </header>
       
       <div className="space-y-3">
         {orders.map((order) => (

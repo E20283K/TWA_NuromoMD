@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useProducts } from '../../hooks/useProducts';
 import { useAuthStore } from '../../store/authStore';
 import { useCartStore } from '../../store/cartStore';
-import { Plus, Minus, ShoppingCart } from 'lucide-react';
+import { Plus, Minus, ShoppingCart, ArrowLeft } from 'lucide-react';
 
 export const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -48,6 +48,12 @@ export const ProductDetails: React.FC = () => {
   return (
     <div className="pb-32 bg-tg-bg min-h-screen">
       <div className="relative aspect-square bg-tg-secondary-bg flex items-center justify-center w-full">
+        <button 
+          onClick={() => navigate(-1)}
+          className="absolute top-4 left-4 z-50 w-10 h-10 bg-black/20 backdrop-blur-md rounded-full flex items-center justify-center text-white active:scale-90 transition-transform"
+        >
+          <ArrowLeft size={24} />
+        </button>
         {product.image_url ? (
           <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
         ) : (
@@ -119,7 +125,7 @@ export const ProductDetails: React.FC = () => {
       </div>
 
       {cartCount > 0 && (
-        <div className="fixed bottom-6 left-4 right-4 z-50 animate-in slide-in-from-bottom-10 fade-in duration-300">
+        <div className="fixed bottom-24 left-4 right-4 z-50 animate-in slide-in-from-bottom-10 fade-in duration-300">
           <button 
             onClick={() => navigate('/cart')}
             className="w-full bg-tg-bg border-2 border-tg-button text-tg-button py-3.5 rounded-xl font-black shadow-2xl flex items-center justify-between px-4 active:scale-95 transition-transform"
