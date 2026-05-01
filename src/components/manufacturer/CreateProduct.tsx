@@ -179,7 +179,7 @@ export const CreateProduct: React.FC = () => {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-tg-bg/80 backdrop-blur-md border-t border-tg-hint/10 z-40">
+      <div className="fixed bottom-16 left-0 right-0 p-4 bg-tg-bg/80 backdrop-blur-md border-t border-tg-hint/10 z-40 pb-safe">
         <button
           onClick={handleSaveProduct}
           disabled={isSubmitting || !newProduct.name || !newProduct.price}

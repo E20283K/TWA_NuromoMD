@@ -26,8 +26,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({ role }) => {
   const links = role === 'agent' ? agentLinks : manufacturerLinks;
 
   return (
-    <div className="fixed bottom-6 left-0 right-0 px-6 z-40 pointer-events-none flex justify-center">
-      <nav className="w-full max-w-sm pointer-events-auto bg-tg-bg/85 backdrop-blur-xl border border-tg-hint/10 rounded-2xl flex items-center justify-around h-16 shadow-[0_8px_32px_rgba(0,0,0,0.15)] overflow-hidden">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-tg-bg border-t border-tg-hint/10 pb-safe">
+      <nav className="w-full flex items-center justify-around h-16">
         {links.map((link) => (
           <NavLink
             key={link.to}
