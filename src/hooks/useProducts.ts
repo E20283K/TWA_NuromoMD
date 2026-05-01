@@ -62,9 +62,8 @@ export const useProducts = (manufacturerId?: string) => {
 
   const deleteProductMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('products')
-        .delete()
+      const { error } = await (supabase.from('products') as any)
+        .update({ is_active: false })
         .eq('id', id);
       if (error) throw error;
     },

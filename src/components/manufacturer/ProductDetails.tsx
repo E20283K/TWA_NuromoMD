@@ -66,18 +66,28 @@ export const ManufacturerProductDetails: React.FC = () => {
   };
 
   const handleDelete = () => {
+    const msg = `${t('deleteConfirm')} "${product.name}"?`;
     haptic.impact('heavy');
-    tg.showConfirm(`${t('deleteConfirm')} "${product.name}"?`, async (ok) => {
-      if (ok) {
-        try {
-          await deleteProduct(product.id);
-          haptic.notification('success');
-          navigate(-1);
-        } catch (error: any) {
-          tg.showAlert(`${t('error')}: ${error.message}`);
-        }
+
+    const performDelete = async () => {
+      try {
+        await deleteProduct(product.id);
+        haptic.notification('success');
+        navigate(-1);
+      } catch (error: any) {
+        tg.showAlert(`${t('error')}: ${error.message}`);
       }
-    });
+    };
+
+    if (tg.showConfirm) {
+      tg.showConfirm(msg, (ok) => {
+        if (ok) performDelete();
+      });
+    } else {
+      if (window.confirm(msg)) {
+        performDelete();
+      }
+    }
   };
 
   const handleSave = async () => {

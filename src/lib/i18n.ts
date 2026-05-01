@@ -126,6 +126,7 @@ export const translations = {
     markAsDelivered: 'Yetkazilgan deb belgilash',
     confirmOrder: 'Tasdiqlash',
     rejectOrder: 'Rad etish',
+    admin: 'Admin',
   }
 };
 

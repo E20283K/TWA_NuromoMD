@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useTranslation } from '../../lib/i18n';
 import { PageHeader } from '../shared/PageHeader';
-import { haptic } from '../../lib/telegram';
+import { haptic, tg } from '../../lib/telegram';
 import { UserX, UserCheck, Package, TrendingUp, ChevronRight } from 'lucide-react';
 import { useOrders } from '../../hooks/useOrders';
 import { StatusBadge } from '../shared/StatusBadge';
@@ -44,6 +44,26 @@ export const AgentDetails: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['agents'] });
       haptic.notification('success');
     },
+    onError: (error: any) => {
+      tg.showAlert(`${t('error')}: ${error.message}`);
+    }
+  });
+
+  const updateRole = useMutation({
+    mutationFn: async (role: any) => {
+      const { error } = await (supabase.from('users') as any)
+        .update({ role })
+        .eq('id', id as string);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['agent', id] });
+      queryClient.invalidateQueries({ queryKey: ['agents'] });
+      haptic.notification('success');
+    },
+    onError: (error: any) => {
+      tg.showAlert(`${t('error')}: ${error.message}`);
+    }
   });
 
   if (isLoadingAgent) {
@@ -87,13 +107,30 @@ export const AgentDetails: React.FC = () => {
           <h2 className="text-xl font-bold mb-1">{agent.full_name}</h2>
           <p className="text-tg-hint text-sm mb-4">@{agent.telegram_username || 'no_username'}</p>
           
-          <div className="flex gap-2">
+          <div className="flex flex-wrap justify-center gap-2">
             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${agent.is_active ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
               {agent.is_active ? t('active') : t('inactive')}
             </span>
-            <span className="px-3 py-1 bg-tg-button/10 text-tg-button rounded-full text-xs font-bold uppercase tracking-wider">
-              {t('agent')}
-            </span>
+            <div className="flex bg-tg-bg rounded-full p-0.5 border border-tg-hint/10">
+              <button
+                onClick={() => {
+                  haptic.impact('light');
+                  updateRole.mutate('agent');
+                }}
+                className={`px-3 py-1 rounded-full text-[10px] font-black uppercase transition-all ${agent.role === 'agent' ? 'bg-tg-button text-tg-button-text' : 'text-tg-hint'}`}
+              >
+                {t('agent')}
+              </button>
+              <button
+                onClick={() => {
+                  haptic.impact('light');
+                  updateRole.mutate('admin');
+                }}
+                className={`px-3 py-1 rounded-full text-[10px] font-black uppercase transition-all ${agent.role === 'admin' ? 'bg-tg-button text-tg-button-text' : 'text-tg-hint'}`}
+              >
+                {t('admin')}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -117,23 +154,26 @@ export const AgentDetails: React.FC = () => {
         </div>
 
         {/* Action Button */}
-        <button
-          onClick={() => {
-            haptic.impact('medium');
-            toggleAgentStatus.mutate(!agent.is_active);
-          }}
-          className={`w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg ${
-            agent.is_active 
-              ? 'bg-red-500/10 text-red-500 border border-red-500/20' 
-              : 'bg-green-500 text-white shadow-green-500/20'
-          }`}
-        >
-          {agent.is_active ? (
-            <><UserX size={20} /> {t('blockAgent')}</>
-          ) : (
-            <><UserCheck size={20} /> {t('approveAgent')}</>
-          )}
-        </button>
+        <div className="space-y-3">
+          <label className="text-[10px] uppercase font-bold text-tg-hint ml-1 block">{t('activity')}</label>
+          <button
+            onClick={() => {
+              haptic.impact('medium');
+              toggleAgentStatus.mutate(!agent.is_active);
+            }}
+            className={`w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg ${
+              agent.is_active 
+                ? 'bg-red-500/10 text-red-500 border border-red-500/20' 
+                : 'bg-green-500 text-white shadow-green-500/20'
+            }`}
+          >
+            {agent.is_active ? (
+              <><UserX size={20} /> {t('blockAgent')}</>
+            ) : (
+              <><UserCheck size={20} /> {t('approveAgent')}</>
+            )}
+          </button>
+        </div>
 
         {/* Recent Orders */}
         <div className="space-y-3">
