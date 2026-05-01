@@ -8,19 +8,19 @@ import { clsx } from 'clsx';
 import { useNavigate } from 'react-router-dom';
 import { showMainButton, hideMainButton } from '../../lib/telegram';
 
-const categories = ['All', 'Medicine', 'Drinks', 'Food', 'Other'];
+const categories = ['Hammasi', 'Dorilar', 'Ichimliklar', 'Oziq-ovqat', 'Boshqalar'];
 
 export const ProductCatalog: React.FC = () => {
   const { user } = useAuthStore();
   const { products, isLoading } = useProducts(user?.manufacturer_id || undefined);
   const { getItemCount, getTotal } = useCartStore();
   const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('Hammasi');
   const navigate = useNavigate();
 
   const filteredProducts = products.filter((p) => {
     const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || p.category.toLowerCase() === selectedCategory.toLowerCase();
+    const matchesCategory = selectedCategory === 'Hammasi' || p.category.toLowerCase() === selectedCategory.toLowerCase();
     return matchesSearch && matchesCategory;
   });
 
@@ -28,7 +28,7 @@ export const ProductCatalog: React.FC = () => {
 
   useEffect(() => {
     if (cartCount > 0) {
-      showMainButton(`View Cart (${cartCount} items) • $${getTotal().toFixed(2)}`, () => {
+      showMainButton(`Savatchani ko'rish (${cartCount} ta) • $${getTotal().toFixed(2)}`, () => {
         navigate('/cart');
       });
     } else {
@@ -41,13 +41,13 @@ export const ProductCatalog: React.FC = () => {
   return (
     <div className="p-4 space-y-4 pb-24">
       <header className="flex flex-col gap-3">
-        <h1 className="text-xl font-bold">Catalog</h1>
+        <h1 className="text-xl font-bold">Katalog</h1>
         
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-tg-hint" size={18} />
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="Mahsulotlarni qidirish..."
             className="w-full bg-tg-secondary-bg border border-tg-hint/10 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:border-tg-button"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -74,7 +74,7 @@ export const ProductCatalog: React.FC = () => {
                   : 'bg-tg-secondary-bg text-tg-hint border border-tg-hint/10'
               )}
             >
-              {cat}
+              {cat === 'All' ? 'Hammasi' : cat === 'Medicine' ? 'Dorilar' : cat === 'Drinks' ? 'Ichimliklar' : cat === 'Food' ? 'Oziq-ovqat' : cat === 'Other' ? 'Boshqalar' : cat}
             </button>
           ))}
         </div>
@@ -93,7 +93,7 @@ export const ProductCatalog: React.FC = () => {
           ))}
           {filteredProducts.length === 0 && (
             <div className="col-span-2 text-center py-12">
-              <p className="text-tg-hint italic">No products found</p>
+              <p className="text-tg-hint italic">Mahsulotlar topilmadi</p>
             </div>
           )}
         </div>
@@ -110,7 +110,7 @@ export const ProductCatalog: React.FC = () => {
               <div className="bg-tg-bg text-tg-button w-6 h-6 rounded-full flex items-center justify-center text-xs">
                 {cartCount}
               </div>
-              <span>View Cart</span>
+              <span>Savatchani ko'rish</span>
             </div>
             <span>${getTotal().toFixed(2)}</span>
           </button>

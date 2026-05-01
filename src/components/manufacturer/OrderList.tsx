@@ -23,7 +23,7 @@ export const OrderList: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-tg-bg pb-24">
-      <PageHeader title="Orders" showBack={false} />
+      <PageHeader title="Buyurtmalar" showBack={false} />
 
       <div className="p-4 space-y-4">
       <div className="flex gap-2">
@@ -31,7 +31,7 @@ export const OrderList: React.FC = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-tg-hint" size={16} />
           <input
             type="text"
-            placeholder="Order # or Agent..."
+            placeholder="Buyurtma # yoki agent..."
             className="w-full bg-tg-secondary-bg border border-tg-hint/10 rounded-xl py-2 pl-9 pr-4 text-sm focus:outline-none"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -42,12 +42,12 @@ export const OrderList: React.FC = () => {
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as any)}
         >
-          <option value="all">All Status</option>
-          <option value="pending">Pending</option>
-          <option value="confirmed">Confirmed</option>
-          <option value="shipped">Shipped</option>
-          <option value="delivered">Delivered</option>
-          <option value="rejected">Rejected</option>
+          <option value="all">Barcha holatlar</option>
+          <option value="pending">Kutilmoqda</option>
+          <option value="confirmed">Tasdiqlandi</option>
+          <option value="shipped">Yuborildi</option>
+          <option value="delivered">Yetkazildi</option>
+          <option value="rejected">Rad etildi</option>
         </select>
       </div>
 

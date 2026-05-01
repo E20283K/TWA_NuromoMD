@@ -18,7 +18,7 @@ export const OrderHistory: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-tg-bg pb-24">
-      <PageHeader title="My Orders" showBack={false} />
+      <PageHeader title="Mening buyurtmalarim" showBack={false} />
       
       <div className="p-4 space-y-3">
         {orders.map((order) => (
@@ -37,7 +37,7 @@ export const OrderHistory: React.FC = () => {
             
             <div className="flex justify-between items-end mt-1 pt-2 border-t border-tg-hint/10">
               <div>
-                <p className="text-[10px] uppercase font-bold text-tg-hint tracking-wider">Delivery to</p>
+                <p className="text-[10px] uppercase font-bold text-tg-hint tracking-wider">Yetkazib berish</p>
                 <p className="text-xs font-medium truncate max-w-[200px]">{order.delivery_address}</p>
               </div>
               <div className="text-right">
@@ -49,7 +49,7 @@ export const OrderHistory: React.FC = () => {
         {orders.length === 0 && (
           <div className="text-center py-20">
             <div className="text-4xl mb-4 opacity-20">📋</div>
-            <p className="text-tg-hint italic">You haven't placed any orders yet</p>
+            <p className="text-tg-hint italic">Sizda hali buyurtmalar yo'q</p>
           </div>
         )}
       </div>

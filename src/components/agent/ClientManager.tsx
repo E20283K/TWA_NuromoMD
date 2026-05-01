@@ -79,7 +79,7 @@ export const ClientManager: React.FC = () => {
   return (
     <div className="min-h-screen bg-tg-bg pb-24">
       <PageHeader
-        title="Client Base"
+        title="Mijozlar bazasi"
         showBack={false}
         rightElement={
           <button
@@ -87,7 +87,7 @@ export const ClientManager: React.FC = () => {
             className="flex items-center gap-1.5 bg-tg-button text-tg-button-text text-sm font-bold px-3 py-2 rounded-xl active:scale-95 transition-transform shadow-lg shadow-tg-button/20"
           >
             <UserPlus size={16} />
-            Add
+            Qo'shish
           </button>
         }
       />
@@ -112,15 +112,15 @@ export const ClientManager: React.FC = () => {
             <div className="w-20 h-20 bg-tg-secondary-bg rounded-full flex items-center justify-center mb-4">
               <User size={36} className="text-tg-hint opacity-40" />
             </div>
-            <h2 className="font-bold text-lg mb-1">No Clients Yet</h2>
+            <h2 className="font-bold text-lg mb-1">Mijozlar hali yo'q</h2>
             <p className="text-tg-hint text-sm mb-6 max-w-xs">
-              Add your regular clients to speed up order creation — their info will be auto-filled in the cart.
+              Buyurtma berishni tezlashtirish uchun doimiy mijozlaringizni qo'shing - ularning ma'lumotlari savatchada avtomatik to'ldiriladi.
             </p>
             <button
               onClick={() => setIsAdding(true)}
               className="bg-tg-button text-tg-button-text font-bold px-6 py-3 rounded-xl shadow-lg shadow-tg-button/20 active:scale-95 transition-transform"
             >
-              Add First Client
+              Birinchi mijozni qo'shish
             </button>
           </div>
         )}
@@ -161,7 +161,7 @@ export const ClientManager: React.FC = () => {
           <div className="relative bg-tg-bg rounded-t-3xl p-6 shadow-2xl animate-in slide-in-from-bottom duration-300 max-h-[90vh] overflow-y-auto">
             <div className="w-12 h-1.5 bg-tg-hint/20 rounded-full mx-auto mb-6" />
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold">New Client</h2>
+              <h2 className="text-xl font-bold">Yangi mijoz</h2>
               <button onClick={() => { setIsAdding(false); resetForm(); }} className="w-9 h-9 flex items-center justify-center bg-tg-secondary-bg rounded-full text-tg-hint">
                 <X size={18} />
               </button>
@@ -169,7 +169,7 @@ export const ClientManager: React.FC = () => {
 
             <div className="space-y-4 mb-6">
               <div>
-                <label className="text-[10px] uppercase font-bold text-tg-hint ml-1 mb-1 block">Client Name *</label>
+                <label className="text-[10px] uppercase font-bold text-tg-hint ml-1 mb-1 block">Mijoz nomi *</label>
                 <input
                   type="text"
                   placeholder="e.g. Alisher Pharmacy"
@@ -181,7 +181,7 @@ export const ClientManager: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[10px] uppercase font-bold text-tg-hint ml-1 mb-1 block">Phone Number</label>
+                <label className="text-[10px] uppercase font-bold text-tg-hint ml-1 mb-1 block">Telefon raqami</label>
                 <input
                   type="tel"
                   placeholder="+998 90 123 45 67"
@@ -192,10 +192,10 @@ export const ClientManager: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[10px] uppercase font-bold text-tg-hint ml-1 mb-1 block">Delivery Address *</label>
+                <label className="text-[10px] uppercase font-bold text-tg-hint ml-1 mb-1 block">Yetkazib berish manzili *</label>
                 <div className="relative">
                   <textarea
-                    placeholder="Full delivery address"
+                    placeholder="To'liq yetkazib berish manzili"
                     value={address}
                     onChange={e => setAddress(e.target.value)}
                     className="w-full bg-tg-secondary-bg border border-tg-hint/10 rounded-xl py-3 px-4 min-h-[80px] text-sm focus:outline-none focus:border-tg-button resize-none pr-16"
@@ -219,10 +219,10 @@ export const ClientManager: React.FC = () => {
               {isSubmitting ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Saving...
+                  Saqlanmoqda...
                 </span>
               ) : (
-                'Save Client'
+                'Mijozni saqlash'
               )}
             </button>
           </div>

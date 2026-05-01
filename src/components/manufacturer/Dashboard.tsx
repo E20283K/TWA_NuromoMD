@@ -23,15 +23,15 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="p-4 space-y-6">
       <header>
-        <p className="text-tg-hint text-sm">Manufacturer Panel</p>
-        <h1 className="text-2xl font-bold">Control Center</h1>
+        <p className="text-tg-hint text-sm">Ishlab chiqaruvchi paneli</p>
+        <h1 className="text-2xl font-bold">Boshqaruv markazi</h1>
       </header>
 
       <section className="grid grid-cols-2 gap-3">
         <div className="bg-tg-secondary-bg p-4 rounded-2xl border border-tg-hint/10">
           <div className="flex items-center gap-2 mb-2">
             <Clock size={14} className="text-amber-500" />
-            <p className="text-tg-hint text-[10px] uppercase font-bold tracking-wider">New Orders</p>
+            <p className="text-tg-hint text-[10px] uppercase font-bold tracking-wider">Yangi buyurtmalar</p>
           </div>
           <p className="text-2xl font-black text-amber-500">{pendingOrders.length}</p>
         </div>
@@ -39,7 +39,7 @@ export const Dashboard: React.FC = () => {
         <div className="bg-tg-secondary-bg p-4 rounded-2xl border border-tg-hint/10">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp size={14} className="text-green-500" />
-            <p className="text-tg-hint text-[10px] uppercase font-bold tracking-wider">Revenue</p>
+            <p className="text-tg-hint text-[10px] uppercase font-bold tracking-wider">Daromad</p>
           </div>
           <p className="text-2xl font-black text-green-500">${totalRevenue > 1000 ? (totalRevenue/1000).toFixed(1) + 'K' : totalRevenue.toFixed(0)}</p>
         </div>
@@ -47,7 +47,7 @@ export const Dashboard: React.FC = () => {
         <div className="bg-tg-secondary-bg p-4 rounded-2xl border border-tg-hint/10">
           <div className="flex items-center gap-2 mb-2">
             <Users size={14} className="text-tg-button" />
-            <p className="text-tg-hint text-[10px] uppercase font-bold tracking-wider">Agents</p>
+            <p className="text-tg-hint text-[10px] uppercase font-bold tracking-wider">Agentlar</p>
           </div>
           <p className="text-2xl font-black text-tg-button">{activeAgentsCount}</p>
         </div>
@@ -55,7 +55,7 @@ export const Dashboard: React.FC = () => {
         <div className="bg-tg-secondary-bg p-4 rounded-2xl border border-tg-hint/10">
           <div className="flex items-center gap-2 mb-2">
             <Package size={14} className="text-indigo-500" />
-            <p className="text-tg-hint text-[10px] uppercase font-bold tracking-wider">Products</p>
+            <p className="text-tg-hint text-[10px] uppercase font-bold tracking-wider">Mahsulotlar</p>
           </div>
           <p className="text-2xl font-black text-indigo-500">{products.length}</p>
         </div>
@@ -63,8 +63,8 @@ export const Dashboard: React.FC = () => {
 
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-bold">Recent Activity</h2>
-          <button onClick={() => navigate('/orders')} className="text-tg-button text-xs font-medium">Manage Orders</button>
+          <h2 className="font-bold">So'nggi harakatlar</h2>
+          <button onClick={() => navigate('/orders')} className="text-tg-button text-xs font-medium">Buyurtmalarni boshqarish</button>
         </div>
         
         <div className="space-y-2">
@@ -94,7 +94,7 @@ export const Dashboard: React.FC = () => {
           ))}
           {orders.length === 0 && (
             <div className="text-center py-12 bg-tg-secondary-bg rounded-2xl border border-dashed border-tg-hint/20">
-              <p className="text-tg-hint text-sm">No orders yet</p>
+              <p className="text-tg-hint text-sm">Hali buyurtmalar yo'q</p>
             </div>
           )}
         </div>

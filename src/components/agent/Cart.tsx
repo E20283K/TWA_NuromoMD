@@ -34,7 +34,7 @@ export const Cart: React.FC = () => {
     showBackButton(() => navigate(-1));
 
     if (items.length > 0 && !showSuccess) {
-      showMainButton(`Submit Order • $${getTotal().toFixed(2)}`, handleSubmit);
+      showMainButton(`Buyurtmani tasdiqlash • $${getTotal().toFixed(2)}`, handleSubmit);
     } else {
       hideMainButton();
     }
@@ -49,7 +49,7 @@ export const Cart: React.FC = () => {
   const handleSubmit = async () => {
     if (items.length === 0 || isSubmitting) return;
     if (!address.trim()) {
-      tg.showAlert('Please provide a delivery address');
+      tg.showAlert('Iltimos, yetkazib berish manzilini kiriting');
       return;
     }
 
@@ -57,7 +57,7 @@ export const Cart: React.FC = () => {
       const manufacturerId = user?.manufacturer_id || items[0]?.manufacturer_id;
       
       if (!manufacturerId) {
-        tg.showAlert('Error: Manufacturer ID not found. Please contact support.');
+        tg.showAlert('Xatolik: Ishlab chiqaruvchi ID topilmadi. Iltimos, qo\'llab-quvvatlash xizmatiga murojaat qiling.');
         return;
       }
 
@@ -122,16 +122,16 @@ export const Cart: React.FC = () => {
         <div className="w-28 h-28 bg-green-500/10 rounded-full flex items-center justify-center mb-6 text-6xl">
           ✅
         </div>
-        <h2 className="text-2xl font-black mb-2">Order Submitted!</h2>
+        <h2 className="text-2xl font-black mb-2">Buyurtma yuborildi!</h2>
         <p className="text-tg-hint mb-8 max-w-xs leading-relaxed">
-          Your order has been sent to the manufacturer for approval.
+          Sizning buyurtmangiz ishlab chiqaruvchiga tasdiqlash uchun yuborildi.
         </p>
         <div className="flex flex-col gap-3 w-full max-w-xs">
           <button
             onClick={() => navigate('/history')}
             className="w-full bg-tg-button text-tg-button-text py-4 rounded-2xl font-bold shadow-lg shadow-tg-button/20"
           >
-            Track Order
+            Buyurtmani kuzatish
           </button>
           <button
             onClick={() => {
@@ -140,7 +140,7 @@ export const Cart: React.FC = () => {
             }}
             className="w-full bg-tg-secondary-bg text-tg-text py-4 rounded-2xl font-bold"
           >
-            New Order
+            Yangi buyurtma
           </button>
         </div>
       </div>
@@ -153,13 +153,13 @@ export const Cart: React.FC = () => {
         <div className="w-24 h-24 bg-tg-secondary-bg rounded-full flex items-center justify-center mb-4">
           <ShoppingCart size={40} className="text-tg-hint opacity-30" />
         </div>
-        <h2 className="text-xl font-bold mb-2">Your cart is empty</h2>
-        <p className="text-tg-hint mb-6">Add products from the catalog to start a new order.</p>
+        <h2 className="text-xl font-bold mb-2">Savatchangiz bo'sh</h2>
+        <p className="text-tg-hint mb-6">Yangi buyurtma berish uchun katalogdan mahsulotlarni qo'shing.</p>
         <button
           onClick={() => navigate('/catalog')}
           className="bg-tg-button text-tg-button-text px-8 py-3 rounded-xl font-bold shadow-lg shadow-tg-button/20"
         >
-          Go to Catalog
+          Katalogga o'tish
         </button>
       </div>
     );
@@ -167,7 +167,7 @@ export const Cart: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-tg-bg pb-52">
-      <PageHeader title="Your Order" />
+      <PageHeader title="Buyurtmangiz" />
 
       <div className="p-4 space-y-6">
         {/* Items */}
@@ -206,14 +206,14 @@ export const Cart: React.FC = () => {
         {/* Delivery Details */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-bold text-sm uppercase tracking-wider text-tg-hint">Delivery Details</h2>
+            <h2 className="font-bold text-sm uppercase tracking-wider text-tg-hint">Yetkazib berish</h2>
             {clients.length > 0 && (
               <button
                 onClick={() => setShowClientPicker(true)}
                 className="flex items-center gap-1 bg-tg-button/10 text-tg-button text-[11px] font-bold px-3 py-1.5 rounded-lg active:scale-95 transition-transform"
               >
                 <User size={12} />
-                Pick Client
+                Mijozni tanlash
                 <ChevronDown size={12} />
               </button>
             )}
@@ -225,7 +225,7 @@ export const Cart: React.FC = () => {
                 <MapPin size={18} />
               </div>
               <textarea
-                placeholder="Delivery Address *"
+                placeholder="Yetkazib berish manzili *"
                 className="w-full bg-tg-secondary-bg border border-tg-hint/10 rounded-xl py-3 pl-10 pr-16 text-sm focus:outline-none focus:border-tg-button min-h-[80px] resize-none"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
@@ -244,7 +244,7 @@ export const Cart: React.FC = () => {
               </div>
               <input
                 type="text"
-                placeholder="Customer Name (Optional)"
+                placeholder="Mijoz ismi (ixtiyoriy)"
                 className="w-full bg-tg-secondary-bg border border-tg-hint/10 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-tg-button"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
@@ -257,7 +257,7 @@ export const Cart: React.FC = () => {
               </div>
               <input
                 type="tel"
-                placeholder="Customer Phone (Optional)"
+                placeholder="Mijoz telefoni (ixtiyoriy)"
                 className="w-full bg-tg-secondary-bg border border-tg-hint/10 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-tg-button"
                 value={customerPhone}
                 onChange={(e) => setCustomerPhone(e.target.value)}
@@ -269,7 +269,7 @@ export const Cart: React.FC = () => {
                 <FileText size={18} />
               </div>
               <textarea
-                placeholder="Order Notes (Optional)"
+                placeholder="Buyurtma uchun izohlar (ixtiyoriy)"
                 className="w-full bg-tg-secondary-bg border border-tg-hint/10 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-tg-button min-h-[60px] resize-none"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
@@ -281,15 +281,15 @@ export const Cart: React.FC = () => {
         {/* Total Summary */}
         <section className="bg-tg-secondary-bg p-4 rounded-2xl space-y-2 border border-tg-hint/5">
           <div className="flex justify-between items-center text-tg-hint text-sm">
-            <span>Subtotal ({items.reduce((s, i) => s + i.quantity, 0)} items)</span>
+            <span>Jami ({items.reduce((s, i) => s + i.quantity, 0)} ta mahsulot)</span>
             <span>${getTotal().toFixed(2)}</span>
           </div>
           <div className="flex justify-between items-center text-tg-hint text-sm">
-            <span>Delivery</span>
-            <span className="text-green-500 font-bold uppercase text-[10px] tracking-wider">Free</span>
+            <span>Yetkazib berish</span>
+            <span className="text-green-500 font-bold uppercase text-[10px] tracking-wider">Bepul</span>
           </div>
           <div className="pt-2 mt-2 border-t border-tg-hint/10 flex justify-between items-center">
-            <span className="font-bold">Total</span>
+            <span className="font-bold">Jami</span>
             <span className="text-xl font-black text-tg-button">${getTotal().toFixed(2)}</span>
           </div>
         </section>
@@ -306,10 +306,10 @@ export const Cart: React.FC = () => {
           {isSubmitting ? (
             <span className="flex items-center gap-2">
               <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              Submitting...
+              Yuborilmoqda...
             </span>
           ) : (
-            `Submit Order • $${getTotal().toFixed(2)}`
+            `Buyurtmani yuborish • $${getTotal().toFixed(2)}`
           )}
         </button>
       </div>
@@ -321,8 +321,8 @@ export const Cart: React.FC = () => {
           <div className="relative bg-tg-bg rounded-t-3xl shadow-2xl animate-in slide-in-from-bottom duration-300 max-h-[70vh] flex flex-col">
             <div className="w-12 h-1.5 bg-tg-hint/20 rounded-full mx-auto mt-4 mb-2 shrink-0" />
             <div className="px-6 py-3 border-b border-tg-hint/10 shrink-0">
-              <h3 className="font-bold text-lg">Select Client</h3>
-              <p className="text-tg-hint text-xs mt-0.5">Tap to autofill delivery details</p>
+              <h3 className="font-bold text-lg">Mijozni tanlang</h3>
+              <p className="text-tg-hint text-xs mt-0.5">Ma'lumotlarni to'ldirish uchun bosing</p>
             </div>
             <div className="overflow-y-auto p-4 space-y-2">
               {clients.map(client => (

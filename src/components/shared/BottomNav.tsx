@@ -10,17 +10,17 @@ interface BottomNavProps {
 
 export const BottomNav: React.FC<BottomNavProps> = ({ role }) => {
   const agentLinks = [
-    { to: '/', icon: Home, label: 'Home' },
-    { to: '/catalog', icon: ShoppingBag, label: 'Catalog' },
-    { to: '/history', icon: ClipboardList, label: 'Orders' },
-    { to: '/clients', icon: Users, label: 'Clients' },
+    { to: '/', icon: Home, label: 'Asosiy' },
+    { to: '/catalog', icon: ShoppingBag, label: 'Katalog' },
+    { to: '/history', icon: ClipboardList, label: 'Buyurtmalar' },
+    { to: '/clients', icon: Users, label: 'Mijozlar' },
   ];
 
   const manufacturerLinks = [
-    { to: '/', icon: BarChart3, label: 'Stats' },
-    { to: '/orders', icon: ClipboardList, label: 'Orders' },
-    { to: '/products', icon: Package, label: 'Products' },
-    { to: '/agents', icon: Users, label: 'Agents' },
+    { to: '/', icon: BarChart3, label: 'Statistika' },
+    { to: '/orders', icon: ClipboardList, label: 'Buyurtmalar' },
+    { to: '/products', icon: Package, label: 'Mahsulotlar' },
+    { to: '/agents', icon: Users, label: 'Agentlar' },
   ];
 
   const links = role === 'agent' ? agentLinks : manufacturerLinks;
