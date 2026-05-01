@@ -38,8 +38,13 @@ export const AgentManager: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['agents'] });
+      queryClient.invalidateQueries({ queryKey: ['agent'] }); // Invalidate details too
       haptic.notification('success');
     },
+    onError: (error: any) => {
+      tg.showAlert(`${t('error')}: ${error.message}`);
+      haptic.notification('error');
+    }
   });
 
   const filteredAgents = agents.filter(a => 
@@ -48,28 +53,41 @@ export const AgentManager: React.FC = () => {
   );
 
   const getInviteLink = () => {
-    const botUsername = import.meta.env.VITE_BOT_USERNAME?.replace('@', '') || 'YourBotName';
-    return `https://t.me/${botUsername}?startapp=invite_${user?.id}`;
+    const botUsername = import.meta.env.VITE_BOT_USERNAME?.replace('@', '') || 'nuromomed_bot';
+    // Use startapp for direct mini app opening if supported, otherwise start
+    return `https://t.me/${botUsername}?start=invite_${user?.id}`;
   };
 
   const handleShareInvite = () => {
-    haptic.impact('light');
-    const inviteLink = getInviteLink();
-    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent('Join as my sales agent!')}`;
-    tg.openTelegramLink(shareUrl);
+    try {
+      haptic.impact('medium');
+      const inviteLink = getInviteLink();
+      // Use internal share if possible
+      if ((tg as any).shareUrl) {
+        (tg as any).shareUrl(inviteLink, 'Join as my sales agent!');
+      } else {
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent('Join as my sales agent!')}`;
+        tg.openTelegramLink(shareUrl);
+      }
+    } catch (e) {
+      const inviteLink = getInviteLink();
+      tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(inviteLink)}`);
+    }
   };
 
   const handleCopyInvite = async () => {
-    haptic.impact('light');
+    haptic.impact('medium');
     const inviteLink = getInviteLink();
     
     try {
-      if (navigator?.clipboard?.writeText) {
+      // Direct clipboard API
+      if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(inviteLink);
         tg.showAlert(t('linkCopied'));
         return;
       }
       
+      // Fallback
       const textArea = document.createElement("textarea");
       textArea.value = inviteLink;
       textArea.style.position = "fixed";
@@ -84,10 +102,11 @@ export const AgentManager: React.FC = () => {
       if (successful) {
         tg.showAlert(t('linkCopied'));
       } else {
-        tg.showAlert(`${t('inviteLink')}: ${inviteLink}`);
+        throw new Error('Copy failed');
       }
     } catch (err) {
-      tg.showAlert(`${t('inviteLink')}: ${inviteLink}`);
+      // Last resort: show the link for manual copying
+      tg.showAlert(`${t('inviteLink')}:\n${inviteLink}`);
     }
   };
 
@@ -103,24 +122,28 @@ export const AgentManager: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-tg-button/10 border border-tg-button/20 p-4 rounded-2xl flex items-center justify-between">
-        <div className="flex-1">
-          <h3 className="text-xs font-black uppercase tracking-wider text-tg-button mb-1">{t('inviteLink')}</h3>
-          <p className="text-[10px] text-tg-hint truncate mr-4">t.me/YourBot?start=invite_{user?.id.substring(0,8)}...</p>
+      <div className="bg-tg-button/10 border border-tg-button/20 p-4 rounded-3xl space-y-4">
+        <div>
+          <h3 className="text-[10px] font-black uppercase tracking-widest text-tg-button mb-1.5 opacity-80">{t('inviteLink')}</h3>
+          <div className="bg-tg-bg/50 p-3 rounded-xl border border-tg-button/5">
+            <p className="text-[11px] text-tg-hint break-all font-medium leading-relaxed">
+              {getInviteLink()}
+            </p>
+          </div>
         </div>
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 gap-3">
           <button 
             onClick={handleCopyInvite}
-            className="bg-tg-secondary-bg text-tg-text px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 active:scale-95 transition-transform border border-tg-hint/10"
+            className="bg-tg-secondary-bg text-tg-text h-11 rounded-xl text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition-all border border-tg-hint/10 shadow-sm"
           >
-            <LinkIcon size={14} />
+            <LinkIcon size={16} />
             {t('copy')}
           </button>
           <button 
             onClick={handleShareInvite}
-            className="bg-tg-button text-tg-button-text px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 active:scale-95 transition-transform"
+            className="bg-tg-button text-tg-button-text h-11 rounded-xl text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-tg-button/20"
           >
-            <Share2 size={14} />
+            <Share2 size={16} />
             {t('share')}
           </button>
         </div>
