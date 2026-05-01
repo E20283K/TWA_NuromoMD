@@ -122,6 +122,10 @@ export const translations = {
     listView: 'Ro\'yxat',
     linkCopied: 'Havola nusxalandi!',
     share: 'Ulashish',
+    markAsShipped: 'Yuborilgan deb belgilash',
+    markAsDelivered: 'Yetkazilgan deb belgilash',
+    confirmOrder: 'Tasdiqlash',
+    rejectOrder: 'Rad etish',
   }
 };
 

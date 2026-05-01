@@ -67,8 +67,9 @@ export const useOrders = (role: 'manufacturer' | 'agent', userId?: string) => {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['order', data.id] });
     },
   });
 

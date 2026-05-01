@@ -6,11 +6,13 @@ import { StatusBadge } from '../shared/StatusBadge';
 import { PageHeader } from './PageHeader';
 import { MapPin, User, Phone, FileText, Check, XCircle, Truck, Package } from 'lucide-react';
 import { haptic, tg } from '../../lib/telegram';
+import { useTranslation } from '../../lib/i18n';
 
 export const OrderDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  const { t } = useTranslation();
 
   // Fetch single order with all items directly — this is the fix
   const { data: order, isLoading, error } = useOrderById(id);
@@ -40,15 +42,15 @@ export const OrderDetailsPage: React.FC = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen text-center p-6 bg-tg-bg">
         <div className="text-5xl mb-4">❌</div>
-        <h2 className="text-xl font-bold mb-2">Order not found</h2>
+        <h2 className="text-xl font-bold mb-2">{t('productNotFound')}</h2>
         <p className="text-tg-hint mb-6 text-sm">
-          {(error as any)?.message || "This order may have been removed or you don't have access."}
+          {(error as any)?.message || t('productNotFound')}
         </p>
         <button
           onClick={() => navigate(-1)}
           className="bg-tg-button text-tg-button-text px-6 py-3 rounded-xl font-bold shadow-lg shadow-tg-button/20"
         >
-          Go Back
+          {t('goBack')}
         </button>
       </div>
     );
@@ -58,7 +60,7 @@ export const OrderDetailsPage: React.FC = () => {
     try {
       haptic.impact('medium');
       if (status === 'rejected') {
-        tg.showConfirm('Are you sure you want to reject this order?', async (ok) => {
+        tg.showConfirm(`${t('rejectOrder')}?`, async (ok) => {
           if (ok) {
             await updateStatus({ orderId: order.id, status });
             haptic.notification('success');
@@ -70,7 +72,7 @@ export const OrderDetailsPage: React.FC = () => {
         haptic.notification('success');
       }
     } catch (e: any) {
-      tg.showAlert(`Error: ${e.message}`);
+      tg.showAlert(`${t('error')}: ${e.message}`);
     }
   };
 
@@ -79,7 +81,7 @@ export const OrderDetailsPage: React.FC = () => {
   return (
     <div className="pb-32 bg-tg-bg min-h-screen">
       <PageHeader
-        title={`Order #${order.order_number}`}
+        title={`${t('orderNumber')} #${order.order_number}`}
         subtitle={new Date(order.created_at).toLocaleString()}
       />
 
@@ -87,14 +89,14 @@ export const OrderDetailsPage: React.FC = () => {
 
         {/* Status */}
         <div className="flex items-center justify-between bg-tg-secondary-bg p-4 rounded-2xl border border-tg-hint/5">
-          <span className="font-bold text-tg-hint uppercase tracking-wider text-[11px]">Status</span>
+          <span className="font-bold text-tg-hint uppercase tracking-wider text-[11px]">{t('status')}</span>
           <StatusBadge status={order.status} />
         </div>
 
         {/* Rejection reason */}
         {order.status === 'rejected' && order.rejected_reason && (
           <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
-            <p className="text-[10px] uppercase font-bold text-red-500 mb-1">Reason for Rejection</p>
+            <p className="text-[10px] uppercase font-bold text-red-500 mb-1">{t('rejectOrder')}</p>
             <p className="text-sm text-red-600 font-medium">{order.rejected_reason}</p>
           </div>
         )}
@@ -103,22 +105,22 @@ export const OrderDetailsPage: React.FC = () => {
         <section className="bg-tg-secondary-bg rounded-2xl border border-tg-hint/5 overflow-hidden">
           <div className="px-4 py-3 border-b border-tg-hint/10 flex items-center gap-2">
             <User size={15} className="text-tg-hint" />
-            <h2 className="font-bold text-sm uppercase tracking-wider text-tg-hint">Customer Details</h2>
+            <h2 className="font-bold text-sm uppercase tracking-wider text-tg-hint">{t('clients')}</h2>
           </div>
           <div className="p-4 space-y-3">
             {user?.role === 'manufacturer' && order.agent && (
               <div className="flex justify-between items-start">
-                <p className="text-[10px] uppercase font-bold text-tg-hint">Agent</p>
+                <p className="text-[10px] uppercase font-bold text-tg-hint">{t('agent')}</p>
                 <p className="font-semibold text-sm text-right">{(order.agent as any).full_name}</p>
               </div>
             )}
             <div className="flex justify-between items-start">
-              <p className="text-[10px] uppercase font-bold text-tg-hint">Customer</p>
+              <p className="text-[10px] uppercase font-bold text-tg-hint">{t('customerName')}</p>
               <p className="font-semibold text-sm text-right">{order.customer_name || '—'}</p>
             </div>
             <div className="flex justify-between items-start">
               <p className="text-[10px] uppercase font-bold text-tg-hint flex items-center gap-1">
-                <Phone size={10} /> Phone
+                <Phone size={10} /> {t('customerPhone')}
               </p>
               <p className="font-semibold text-sm text-right">{order.customer_phone || '—'}</p>
             </div>
@@ -129,14 +131,14 @@ export const OrderDetailsPage: React.FC = () => {
         <section className="bg-tg-secondary-bg rounded-2xl border border-tg-hint/5 overflow-hidden">
           <div className="px-4 py-3 border-b border-tg-hint/10 flex items-center gap-2">
             <MapPin size={15} className="text-tg-hint" />
-            <h2 className="font-bold text-sm uppercase tracking-wider text-tg-hint">Delivery</h2>
+            <h2 className="font-bold text-sm uppercase tracking-wider text-tg-hint">{t('deliveryAddress')}</h2>
           </div>
           <div className="p-4 space-y-3">
             <p className="text-sm font-medium leading-relaxed">{order.delivery_address}</p>
             {order.notes && (
               <div className="pt-3 border-t border-tg-hint/10">
                 <p className="text-[10px] uppercase font-bold text-tg-hint mb-1 flex items-center gap-1">
-                  <FileText size={10} /> Notes
+                  <FileText size={10} /> {t('notes')}
                 </p>
                 <p className="text-sm italic text-tg-hint">{order.notes}</p>
               </div>
@@ -149,14 +151,14 @@ export const OrderDetailsPage: React.FC = () => {
           <div className="px-4 py-3 border-b border-tg-hint/10 flex items-center gap-2">
             <Package size={15} className="text-tg-hint" />
             <h2 className="font-bold text-sm uppercase tracking-wider text-tg-hint">
-              Items ({items.length})
+              {t('orderItems')} ({items.length})
             </h2>
           </div>
 
           {items.length === 0 ? (
             <div className="p-6 text-center text-tg-hint text-sm">
               <Package size={28} className="mx-auto mb-2 opacity-20" />
-              <p>No items found for this order.</p>
+              <p>{t('noOrdersYet')}</p>
             </div>
           ) : (
             <div className="divide-y divide-tg-hint/10">
@@ -174,7 +176,7 @@ export const OrderDetailsPage: React.FC = () => {
                 </div>
               ))}
               <div className="px-4 py-4 flex justify-between items-center bg-tg-button/5">
-                <span className="font-black text-base">Total</span>
+                <span className="font-black text-base">{t('total')}</span>
                 <span className="font-black text-2xl text-tg-button">
                   ${Number(order.total_amount).toFixed(2)}
                 </span>
@@ -191,14 +193,14 @@ export const OrderDetailsPage: React.FC = () => {
               className="flex-1 bg-red-500/10 text-red-500 py-4 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform border border-red-500/20"
             >
               <XCircle size={18} />
-              Reject
+              {t('rejectOrder')}
             </button>
             <button
               onClick={() => handleUpdateStatus('confirmed')}
               className="flex-1 bg-green-500 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-green-500/20 active:scale-95 transition-transform"
             >
               <Check size={18} />
-              Confirm
+              {t('confirmOrder')}
             </button>
           </div>
         )}
@@ -209,7 +211,18 @@ export const OrderDetailsPage: React.FC = () => {
             className="w-full bg-tg-button text-tg-button-text py-4 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-lg shadow-tg-button/20"
           >
             <Truck size={20} />
-            Mark as Shipped
+            {t('markAsShipped')}
+          </button>
+        )}
+
+        {/* Agent Actions */}
+        {user?.role === 'agent' && order.status === 'shipped' && (
+          <button
+            onClick={() => handleUpdateStatus('delivered')}
+            className="w-full bg-green-500 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-lg shadow-green-500/20"
+          >
+            <Check size={20} />
+            {t('markAsDelivered')}
           </button>
         )}
       </div>
