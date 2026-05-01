@@ -4,8 +4,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useTranslation } from '../../lib/i18n';
 import { PageHeader } from '../shared/PageHeader';
-import { haptic, tg } from '../../lib/telegram';
-import { UserX, UserCheck, Package, TrendingUp, Clock, ChevronRight } from 'lucide-react';
+import { haptic } from '../../lib/telegram';
+import { UserX, UserCheck, Package, TrendingUp, ChevronRight } from 'lucide-react';
 import { useOrders } from '../../hooks/useOrders';
 import { StatusBadge } from '../shared/StatusBadge';
 import type { User } from '../../types';
@@ -22,7 +22,7 @@ export const AgentDetails: React.FC = () => {
       const { data, error } = await supabase
         .from('users')
         .select('*')
-        .eq('id', id)
+        .eq('id', id as string)
         .single();
       if (error) throw error;
       return data as User;
@@ -30,13 +30,13 @@ export const AgentDetails: React.FC = () => {
     enabled: !!id,
   });
 
-  const { orders, isLoading: isLoadingOrders } = useOrders('agent', id);
+  const { orders, isLoading: isLoadingOrders } = useOrders('agent', id as string);
 
   const toggleAgentStatus = useMutation({
     mutationFn: async (isActive: boolean) => {
       const { error } = await (supabase.from('users') as any)
         .update({ is_active: isActive })
-        .eq('id', id);
+        .eq('id', id as string);
       if (error) throw error;
     },
     onSuccess: () => {

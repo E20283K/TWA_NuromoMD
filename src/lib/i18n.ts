@@ -73,7 +73,6 @@ export const translations = {
     // Manufacturer Specific
     approveAgent: 'Agentni tasdiqlash',
     blockAgent: 'Agentni bloklash',
-    activeAgents: 'Faol agentlar',
     pendingAgents: 'Kutilayotgan agentlar',
     totalSales: 'Umumiy savdo',
     activeProducts: 'Faol mahsulotlar',

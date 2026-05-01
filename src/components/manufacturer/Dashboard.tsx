@@ -4,6 +4,7 @@ import { useOrders } from '../../hooks/useOrders';
 import { useProducts } from '../../hooks/useProducts';
 import { StatusBadge } from '../shared/StatusBadge';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '../../lib/i18n';
 import { TrendingUp, Users, Package, Clock, ChevronRight } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
