@@ -6,6 +6,9 @@ export const initTWA = () => {
   // Only call SDK methods if they exist (prevents crash in regular browsers)
   if (typeof tg.ready === 'function') tg.ready();
   if (typeof tg.expand === 'function') tg.expand();
+  if (typeof tg.requestFullscreen === 'function') {
+    try { tg.requestFullscreen(); } catch (e) {}
+  }
   
   // Apply theme colors to body with safety check
   if (tg.themeParams && tg.themeParams.bg_color) {

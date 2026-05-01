@@ -18,10 +18,13 @@ import { OrderList as ManufacturerOrderList } from './components/manufacturer/Or
 import { ProductManager } from './components/manufacturer/ProductManager';
 import { AgentManager } from './components/manufacturer/AgentManager';
 import { ManufacturerProductDetails } from './components/manufacturer/ProductDetails';
+import { CreateProduct } from './components/manufacturer/CreateProduct';
+import { AgentDetails } from './components/manufacturer/AgentDetails';
 
 // Shared
 import { BottomNav } from './components/shared/BottomNav';
 import { LoadingScreen } from './components/shared/LoadingScreen';
+import { useTranslation } from './lib/i18n';
 
 import { BackButtonManager } from './components/shared/BackButtonManager';
 import { LinkManufacturer } from './components/agent/LinkManufacturer';
@@ -31,6 +34,7 @@ const queryClient = new QueryClient();
 
 const AppContent: React.FC = () => {
   const { user, isLoading, login, error } = useAuthStore();
+  const { t } = useTranslation();
 
   useEffect(() => {
     initTWA();
@@ -45,7 +49,7 @@ const AppContent: React.FC = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center bg-tg-bg text-tg-text">
         <div className="text-6xl mb-4">🚫</div>
-        <h1 className="text-2xl font-bold mb-2">Authentication Error</h1>
+        <h1 className="text-2xl font-bold mb-2">{t('error')}</h1>
         <p className="text-tg-hint mb-6 max-w-xs mx-auto">
           {error || 'Please open this app through the official Telegram bot.'}
         </p>
@@ -53,7 +57,7 @@ const AppContent: React.FC = () => {
           onClick={() => window.location.reload()}
           className="bg-tg-button text-tg-button-text px-6 py-3 rounded-xl font-bold"
         >
-          Try Again
+          {t('back')}
         </button>
       </div>
     );
@@ -65,9 +69,9 @@ const AppContent: React.FC = () => {
 
   if (user.role === 'agent' && !user.is_active) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center bg-tg-bg text-tg-text safe-top">
+      <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center bg-tg-bg text-tg-text safe-top pt-[var(--tg-content-safe-area-inset-top)]">
         <div className="text-6xl mb-4">⏳</div>
-        <h1 className="text-2xl font-bold mb-2">Pending Approval</h1>
+        <h1 className="text-2xl font-bold mb-2">{t('pendingApprovals')}</h1>
         <p className="text-tg-hint mb-6 max-w-xs mx-auto">
           Your account is waiting for approval from the manufacturer. Please check back later.
         </p>
@@ -75,14 +79,14 @@ const AppContent: React.FC = () => {
           onClick={() => window.location.reload()}
           className="bg-tg-button text-tg-button-text px-6 py-3 rounded-xl font-bold"
         >
-          Refresh Status
+          {t('back')}
         </button>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-tg-bg text-tg-text pb-32 safe-top">
+    <div className="min-h-screen bg-tg-bg text-tg-text pb-32 pt-[var(--tg-content-safe-area-inset-top)] px-[var(--tg-content-safe-area-inset-left)] pr-[var(--tg-content-safe-area-inset-right)]">
       <BackButtonManager />
       <Routes>
         {user.role === 'agent' ? (
@@ -102,8 +106,10 @@ const AppContent: React.FC = () => {
             <Route path="/orders" element={<ManufacturerOrderList />} />
             <Route path="/order/:id" element={<OrderDetailsPage />} />
             <Route path="/products" element={<ProductManager />} />
+            <Route path="/product/new" element={<CreateProduct />} />
             <Route path="/product/:id" element={<ManufacturerProductDetails />} />
             <Route path="/agents" element={<AgentManager />} />
+            <Route path="/agent/:id" element={<AgentDetails />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
         )}
