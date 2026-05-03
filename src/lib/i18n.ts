@@ -127,6 +127,8 @@ export const translations = {
     confirmOrder: 'Tasdiqlash',
     rejectOrder: 'Rad etish',
     admin: 'Admin',
+    inviteMessage: 'Mening savdo agentim sifatida qo\'shiling!',
+    inviteText: 'Taklif havolasi orqali ro\'yxatdan o\'ting:',
   }
 };
 

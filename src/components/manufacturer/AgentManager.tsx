@@ -64,19 +64,13 @@ export const AgentManager: React.FC = () => {
     try {
       haptic.impact('medium');
       const inviteLink = getInviteLink();
-      const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent('Join as my sales agent!')}`;
+      const message = t('inviteMessage');
+      const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(message)}`;
       
-      // Attempt 1: Internal Share (if available)
-      if ((tg as any).shareUrl) {
-        (tg as any).shareUrl(inviteLink, 'Join as my sales agent!');
-        return;
-      }
-
-      // Attempt 2: openTelegramLink with t.me/ format
-      const tmeUrl = shareUrl.replace('https://', '');
-      tg.openTelegramLink(tmeUrl);
+      // openTelegramLink MUST start with https://t.me/ or tg://
+      tg.openTelegramLink(shareUrl);
     } catch (e) {
-      // Attempt 3: openLink
+      // Fallback to external link if internal fails
       const inviteLink = getInviteLink();
       const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}`;
       tg.openLink(shareUrl);
@@ -88,29 +82,23 @@ export const AgentManager: React.FC = () => {
       haptic.impact('medium');
       const inviteLink = getInviteLink();
       
-      // Try Modern Clipboard API first
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(inviteLink);
         tg.showAlert(t('linkCopied'));
-        return;
-      }
-      
-      // Fallback to older method
-      const textArea = document.createElement("textarea");
-      textArea.value = inviteLink;
-      textArea.style.position = "fixed";
-      textArea.style.left = "-9999px";
-      textArea.style.top = "0";
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      const successful = document.execCommand('copy');
-      document.body.removeChild(textArea);
-      
-      if (successful) {
-        tg.showAlert(t('linkCopied'));
       } else {
-        tg.showAlert(`${t('inviteLink')}:\n${inviteLink}`);
+        // Fallback for older browsers or restricted environments
+        const textArea = document.createElement("textarea");
+        textArea.value = inviteLink;
+        document.body.appendChild(textArea);
+        textArea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (successful) {
+          tg.showAlert(t('linkCopied'));
+        } else {
+          tg.showAlert(`${t('inviteLink')}:\n${inviteLink}`);
+        }
       }
     } catch (err) {
       const inviteLink = getInviteLink();
